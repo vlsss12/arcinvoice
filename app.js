@@ -1,4 +1,5 @@
 const walletButton=document.querySelector('#walletButton');
+const disconnectButton=document.querySelector('#disconnectButton');
 const payButton=document.querySelector('#payButton');
 const createButton=document.querySelector('#createButton');
 const status=document.querySelector('#status');
@@ -6,12 +7,72 @@ const receipt=document.querySelector('#receipt');
 const recipientInput=document.querySelector('#recipient');
 const amountInput=document.querySelector('#amount');
 const notice=document.querySelector('#notice');
+const dailyPoints=document.querySelector('#dailyPoints');
+const checkinMessage=document.querySelector('#checkinMessage');
+const checkinButtons=document.querySelectorAll('.checkin-button');
 // Wallets require 18 native decimals for Arc's EVM network configuration.
 // The USDC ERC-20 transfer below still uses the token's 6 display decimals.
 const arcChain={chainId:'0x4cef52',chainName:'Arc Testnet',nativeCurrency:{name:'USDC',symbol:'USDC',decimals:18},rpcUrls:['https://rpc.drpc.testnet.arc.network'],blockExplorerUrls:['https://testnet.arcscan.app']};
 let account;
 
+function today(){return new Date().toISOString().slice(0,10);}
+function walletStorageKey(type){return account?`arcinvoice-${type}-${account.toLowerCase()}`:null;}
+function getWalletCheckin(){
+  const key=walletStorageKey('checkin');
+  return key?JSON.parse(localStorage.getItem(key)||'{}'):{};
+}
+function getWalletPoints(){
+  const key=walletStorageKey('points');
+  return key?Number(localStorage.getItem(key)||0):0;
+}
+function renderCheckin(){
+  if(!account){
+    dailyPoints.textContent='0';
+    checkinButtons.forEach(button=>{button.disabled=false;});
+    checkinMessage.textContent='Connect a wallet to view its points and complete a check-in.';
+    return;
+  }
+  const checkin=getWalletCheckin();
+  const points=getWalletPoints();
+  const claimedToday=checkin.date===today();
+  dailyPoints.textContent=String(points);
+  checkinButtons.forEach(button=>{button.disabled=claimedToday;});
+  if(claimedToday)checkinMessage.innerHTML=`${checkin.choice} recorded today. <a href="https://testnet.arcscan.app/tx/${checkin.txHash}" target="_blank" rel="noreferrer">View transaction ↗</a> · come back tomorrow for another site point.`;
+}
+async function claimCheckin(choice){
+  try{
+    if(!account)await connectWallet();
+    const checkin=getWalletCheckin();
+    if(checkin.date===today())return;
+    checkinButtons.forEach(button=>{button.disabled=true;});
+    checkinMessage.textContent=`Confirm your ${choice} check-in in the wallet. This creates a testnet transaction to your own wallet.`;
+    const txHash=await window.ethereum.request({method:'eth_sendTransaction',params:[{from:account,to:account,value:'0x0'}]});
+    const points=getWalletPoints()+1;
+    localStorage.setItem(walletStorageKey('checkin'),JSON.stringify({date:today(),choice,txHash}));
+    localStorage.setItem(walletStorageKey('points'),String(points));
+    renderCheckin();
+  }catch(error){
+    checkinMessage.textContent='Check-in was not submitted. You can try again.';
+    renderCheckin();
+  }
+}
+
 function isAddress(value){return /^0x[a-fA-F0-9]{40}$/.test(value);}
+async function disconnectWallet(revokePermission=true){
+  if(revokePermission&&window.ethereum){
+    disconnectButton.textContent='Disconnecting…';
+    try{await window.ethereum.request({method:'wallet_revokePermissions',params:[{eth_accounts:{}}]});}catch(error){console.info('Wallet permission revoke is not available in this wallet.',error);}
+  }
+  account=undefined;
+  walletButton.textContent='Connect wallet';
+  payButton.textContent='Connect wallet to pay';
+  disconnectButton.classList.add('hidden');
+  disconnectButton.textContent='Disconnect';
+  status.textContent='Ready';
+  status.style.background='';
+  status.style.color='';
+  renderCheckin();
+}
 function showFriendlyError(error){
   const message=String(error?.message||'');
   status.textContent='Action needed';
@@ -41,17 +102,25 @@ async function connectWallet(){
   const accounts=await window.ethereum.request({method:'eth_requestAccounts'});
   account=accounts[0];
   walletButton.textContent=`${account.slice(0,6)}…${account.slice(-4)}`;
+  disconnectButton.classList.remove('hidden');
   payButton.textContent='Pay test USDC';
   status.textContent='Wallet connected';
+  renderCheckin();
   return account;
 }
 walletButton.addEventListener('click',async()=>{try{await connectWallet();}catch(error){walletButton.textContent='Connect wallet';showFriendlyError(error);}});
+disconnectButton.addEventListener('click',()=>{void disconnectWallet();});
 createButton.addEventListener('click',()=>document.querySelector('#invoice').scrollIntoView({behavior:'smooth'}));
+checkinButtons.forEach(button=>button.addEventListener('click',()=>claimCheckin(button.dataset.checkin)));
+renderCheckin();
 if(window.ethereum){
   window.ethereum.on('accountsChanged',accounts=>{
     account=accounts[0];
+    if(!account){void disconnectWallet(false);return;}
     walletButton.textContent=account?`${account.slice(0,6)}…${account.slice(-4)}`:'Connect wallet';
     payButton.textContent=account?'Pay test USDC':'Connect wallet to pay';
+    disconnectButton.classList.remove('hidden');
+    renderCheckin();
   });
   window.ethereum.on('chainChanged',()=>window.location.reload());
 }
