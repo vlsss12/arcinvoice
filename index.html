@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A USDC invoice demo for Arc Testnet." />
+    <title>arcinvoice.io — USDC payments</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <nav><a class="brand" href="#">arc<span>invoice</span><i style="font-size:16px;font-style:normal;color:#777293;letter-spacing:-.8px">.io</i></a><span class="pill">Arc Testnet</span><button id="walletButton">Connect wallet</button></nav>
+      <section class="hero">
+        <div><p class="eyebrow">PROGRAMMABLE MONEY • USDC</p><h1>Send an invoice.<br /><em>Settle in seconds.</em></h1><p class="lede">A clean, transparent USDC invoice flow built for Arc Testnet.</p><div class="actions"><button class="primary" id="createButton">Create invoice</button><a href="https://faucet.circle.com" target="_blank" rel="noreferrer">Get test USDC ↗</a></div></div>
+        <img src="assets/arc-invoice-cover.png" alt="Abstract arcinvoice.io USDC payment illustration" />
+      </section>
+      <section class="stats"><div><strong>&lt; 1 sec</strong><span>deterministic finality</span></div><div><strong>USDC</strong><span>native gas token</span></div><div><strong>Arc</strong><span>EVM compatible</span></div></section>
+      <section class="invoice-wrap" id="invoice"><div class="invoice-card"><div class="invoice-top"><div><p class="eyebrow">ARC TESTNET PAYMENT</p><h2>Send test USDC</h2><p>Connect does not request a message signature.</p></div><span class="status" id="status">Ready</span></div><div style="display:grid;gap:12px;margin:24px 0"><label style="font-size:12px;font-weight:800;color:#6d718b">Recipient wallet<input id="recipient" inputmode="text" autocomplete="off" placeholder="0x..." style="display:block;width:100%;margin-top:6px;border:1px solid #e7e7f2;background:#fff;border-radius:9px;padding:12px;color:#0f1025;font:inherit" /></label><label style="font-size:12px;font-weight:800;color:#6d718b">Amount (USDC)<input id="amount" inputmode="decimal" value="1.00" placeholder="1.00" style="display:block;width:100%;margin-top:6px;border:1px solid #e7e7f2;background:#fff;border-radius:9px;padding:12px;color:#0f1025;font:inherit" /></label></div><div class="meta"><span>Network <b>Arc Testnet</b></span><span>Gas token <b>USDC</b></span></div><button class="pay" id="payButton">Connect wallet to pay</button><p class="notice" id="notice">Need test USDC? <a href="https://faucet.circle.com" target="_blank" rel="noreferrer">Open the Circle Faucet ↗</a>. Select Arc Testnet, enter your wallet address, then request tokens. Connecting only grants wallet access; approval is requested only when you submit a payment. Testnet only.</p></div>
+      <aside><p class="eyebrow">HOW IT WORKS</p><ol><li><b>1</b><div><strong>Create</strong><span>Make a clear USDC invoice.</span></div></li><li><b>2</b><div><strong>Connect</strong><span>Wallet switches to Arc Testnet.</span></div></li><li><b>3</b><div><strong>Settle</strong><span>Record a verifiable payment.</span></div></li></ol><a class="docs" href="https://docs.arc.io/arc/references/connect-to-arc" target="_blank" rel="noreferrer">Arc network setup ↗</a></aside></section>
+      <section class="receipt hidden" id="receipt"><span class="check">✓</span><div><p class="eyebrow">PAYMENT CONFIRMED</p><h2>Invoice settled</h2><p>25.00 USDC recorded on Arc Testnet.</p></div><a href="https://testnet.arcscan.app" target="_blank" rel="noreferrer">View on ArcScan ↗</a></section>
+      <footer>Built for Arc Testnet · Demo project · Never use real funds in a demo</footer>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
