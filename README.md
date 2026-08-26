@@ -6,13 +6,7 @@ A GitHub-ready web app for simple USDC invoices on **Arc Testnet**. Users connec
 
 > Testnet only. This app never receives or stores a private key, and it does not prefill a recipient address. Check the recipient and amount in your wallet before approving.
 
-## Live demo
-
-Open the live Vercel deployment: [arcinvoice-ashen.vercel.app](https://arcinvoice-ashen.vercel.app)
-
-## Deploy on Vercel
-
-This is a static website. Import this GitHub repository into Vercel, or deploy the folder using the Vercel CLI. No build command is required.
+Website: [arcinvoice-ashen.vercel.app](https://arcinvoice-ashen.vercel.app)
 
 ## Make a testnet payment
 
@@ -34,20 +28,6 @@ The code makes a direct native USDC payment on Arc Testnet, then links the submi
 | Faucet | https://faucet.circle.com |
 
 The Connect Wallet button asks an injected wallet such as MetaMask to add Arc Testnet. Official network setup: [Connect to Arc](https://docs.arc.io/arc/references/connect-to-arc).
-
-## Submission checklist
-
-- [x] Deploy an actual testnet payment flow
-- [ ] Record a 2–3 minute demo
-- [ ] Add screenshots and a live deployment URL
-- [ ] Submit this repository only through an official Arc challenge/hackathon form
-
-## What to say in the demo
-
-1. arcinvoice.io makes USDC invoice payments easy to understand.
-2. A wallet connects to Arc Testnet, where USDC is also the gas token.
-3. The payer sees a simple, transparent amount and payment status.
-4. The app links to the submitted payment on ArcScan.
 
 ## License
 
