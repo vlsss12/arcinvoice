@@ -6,15 +6,13 @@ A GitHub-ready web app for simple USDC invoices on **Arc Testnet**. Users connec
 
 > Testnet only. This app never receives or stores a private key, and it does not prefill a recipient address. Check the recipient and amount in your wallet before approving.
 
-## Run locally
+## Live demo
 
-No install is required. Serve the folder with any static web server:
+Open the live Vercel deployment: [arcinvoice-ashen.vercel.app](https://arcinvoice-ashen.vercel.app)
 
-```bash
-python3 -m http.server 8080
-```
+## Deploy on Vercel
 
-Then visit `http://localhost:8080`.
+This is a static website. Import this GitHub repository into Vercel, or deploy the folder using the Vercel CLI. No build command is required.
 
 ## Make a testnet payment
 
