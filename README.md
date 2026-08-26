@@ -6,27 +6,15 @@ A GitHub-ready web app for simple USDC invoices on **Arc Testnet**. Users connec
 
 > Testnet only. This app never receives or stores a private key, and it does not prefill a recipient address. Check the recipient and amount in your wallet before approving.
 
-Website: [arcinvoice-ashen.vercel.app](https://arcinvoice-ashen.vercel.app)
+## Run locally
 
-## What it includes
+No install is required. Serve the folder with any static web server:
 
-- **Direct USDC invoice payment:** The payer enters a recipient and amount, then approves the payment in their own Arc Testnet wallet.
-- **Shareable invoice links:** Recipient, amount, and optional memo are encoded in a URL for convenient sharing. The link cannot sign or submit a payment.
-- **Read-only payment verifier:** Paste an Arc Testnet transaction hash to view status, amount, sender, recipient, block, time, and an ArcScan link. No wallet connection is required.
-- **Network status:** Displays the current Arc Testnet block number and public RPC availability.
+```bash
+python3 -m http.server 8080
+```
 
-## Architecture
-
-This is a static, client-side application. It uses the public Arc Testnet JSON-RPC endpoint for read-only data and an injected EVM wallet only when a user explicitly connects or submits a payment.
-
-| Flow | Arc JSON-RPC method |
-| --- | --- |
-| Latest network block | `eth_blockNumber` |
-| Transaction lookup | `eth_getTransactionByHash` |
-| Final payment status | `eth_getTransactionReceipt` |
-| Transaction timestamp | `eth_getBlockByNumber` |
-
-ArcScan is linked for independent transaction inspection; it is not used as the data source.
+Then visit `http://localhost:8080`.
 
 ## Make a testnet payment
 
@@ -49,16 +37,19 @@ The code makes a direct native USDC payment on Arc Testnet, then links the submi
 
 The Connect Wallet button asks an injected wallet such as MetaMask to add Arc Testnet. Official network setup: [Connect to Arc](https://docs.arc.io/arc/references/connect-to-arc).
 
-## Test cases
+## Submission checklist
 
-| Scenario | Expected result |
-| --- | --- |
-| Valid Arc Testnet USDC transaction hash | Displays finalized status and transaction details |
-| Unknown or wrong-network hash | Shows a clear “not found” message |
-| Malformed hash | Validates the input without making an RPC request |
-| Shared invoice link | Prefills recipient, amount, and memo; does not connect a wallet |
-| Wallet connection cancelled | Shows a clear cancellation message; no payment is sent |
-| Payment rejected in wallet | Shows an action-needed message; no payment is sent |
+- [x] Deploy an actual testnet payment flow
+- [ ] Record a 2–3 minute demo
+- [ ] Add screenshots and a live deployment URL
+- [ ] Submit this repository only through an official Arc challenge/hackathon form
+
+## What to say in the demo
+
+1. arcinvoice.io makes USDC invoice payments easy to understand.
+2. A wallet connects to Arc Testnet, where USDC is also the gas token.
+3. The payer sees a simple, transparent amount and payment status.
+4. The app links to the submitted payment on ArcScan.
 
 ## License
 
