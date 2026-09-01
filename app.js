@@ -35,9 +35,15 @@ const runWalletCheckButton=document.querySelector('#runWalletCheckButton');
 const switchWalletNetworkButton=document.querySelector('#switchWalletNetworkButton');
 const downloadWalletReportButton=document.querySelector('#downloadWalletReportButton');
 const walletLabMessage=document.querySelector('#walletLabMessage');
+const runRpcMatrixButton=document.querySelector('#runRpcMatrixButton');
+const copyRpcMatrixButton=document.querySelector('#copyRpcMatrixButton');
+const downloadRpcMatrixButton=document.querySelector('#downloadRpcMatrixButton');
+const rpcMatrixRows=document.querySelector('#rpcMatrixRows');
+const rpcMatrixMessage=document.querySelector('#rpcMatrixMessage');
 // Arc uses USDC as its native gas token, with 18 decimals in wallet network metadata.
 const arcRpc='https://rpc.testnet.arc.io';
 const arcChain={chainId:'0x4cef52',chainName:'Arc Testnet',nativeCurrency:{name:'USDC',symbol:'USDC',decimals:18},rpcUrls:[arcRpc],blockExplorerUrls:['https://testnet.arcscan.app']};
+const arcRpcEndpoints=[{name:'Primary',url:arcRpc},{name:'Blockdaemon',url:'https://rpc.blockdaemon.testnet.arc.io'},{name:'dRPC',url:'https://rpc.drpc.testnet.arc.io'},{name:'QuickNode',url:'https://rpc.quicknode.testnet.arc.io'}];
 const nativeUsdcContract='0x3600000000000000000000000000000000000000';
 let account;
 let latestTestReport='';
@@ -45,6 +51,8 @@ let latestDiagnosticReport='';
 let latestTestBundle;
 let walletConnectionInFlight=false;
 let latestWalletReport;
+let latestRpcMatrixReport;
+let latestRpcMatrixText='';
 const testRunStorageKey='arcinvoice-test-runs-v1';
 
 function isAddress(value){return /^0x[a-fA-F0-9]{40}$/.test(value);}
@@ -54,6 +62,8 @@ function formatNativeUsdc(value){const units=BigInt(value||'0x0');const whole=un
 function formatTokenUsdc(value){const units=BigInt(value||'0x0');const whole=units/10n**6n;const fraction=(units%10n**6n).toString().padStart(6,'0').replace(/0+$/,'');return `${whole.toLocaleString()}${fraction?`.${fraction}`:''} USDC`;}
 function usdcTransfer(transaction){if(transaction?.to?.toLowerCase()!==nativeUsdcContract||!transaction.input?.startsWith('0xa9059cbb')||transaction.input.length<138)return null;return {to:`0x${transaction.input.slice(34,74)}`,amount:`0x${transaction.input.slice(74,138)}`};}
 async function rpc(method,params){const response=await fetch(arcRpc,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method,params})});if(!response.ok)throw new Error('Arc RPC is temporarily unavailable.');const payload=await response.json();if(payload.error)throw new Error(payload.error.message||'Arc RPC returned an error.');return payload.result;}
+async function rpcAt(endpoint,method,params){const response=await fetch(endpoint,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method,params})});if(!response.ok)throw new Error(`HTTP ${response.status}`);const payload=await response.json();if(payload.error)throw new Error(payload.error.message||'RPC returned an error');return payload.result;}
+function escapeHtml(value){return String(value).replace(/[&<>'"]/g,character=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[character]));}
 function setWalletLabCell(name,state,detail){const stateElement=document.querySelector(`#wallet${name}State`);const detailElement=document.querySelector(`#wallet${name}Detail`);stateElement.textContent=state.toUpperCase();stateElement.className=`wallet-state ${state}`;detailElement.textContent=detail;}
 function sanitizeWalletError(error){return String(error?.message||error||'Unknown wallet error').replace(/0x[a-fA-F0-9]{40,}/g,'[redacted]').replace(/\s+/g,' ').slice(0,180);}
 function walletProviderLabel(provider){if(provider?.isMetaMask)return 'MetaMask-compatible EIP-1193 provider detected';if(provider?.isRabby)return 'Rabby EIP-1193 provider detected';return provider?'EIP-1193 provider detected':'No injected EVM wallet detected';}
@@ -115,6 +125,38 @@ async function switchWalletToArcForLab(){
   finally{switchWalletNetworkButton.disabled=false;switchWalletNetworkButton.textContent='Switch to Arc Testnet';}
 }
 function downloadWalletReport(){if(latestWalletReport)downloadJson(latestWalletReport,`arc-wallet-compatibility-${latestWalletReport.checkedAt.slice(0,10)}.json`);}
+function matrixDifference(blockNumber,primaryBlock){if(primaryBlock===null||blockNumber===null)return '—';const difference=primaryBlock-blockNumber;if(difference===0)return 'In sync';return difference>0?`${difference.toLocaleString()} behind`:`${Math.abs(difference).toLocaleString()} ahead`;}
+function renderRpcMatrix(results){const primary=results.find(result=>result.name==='Primary');const primaryBlock=primary?.blockNumber??null;rpcMatrixRows.innerHTML=results.map(result=>{const statusClass=result.status==='pass'?'pass':result.status==='warn'?'warn':'fail';const chain=result.chainId?Number(BigInt(result.chainId)).toLocaleString():'—';const block=result.blockNumber===null?'—':result.blockNumber.toLocaleString();const observed=result.responseMs?`${result.responseMs} ms`:'—';const detail=result.error?escapeHtml(result.error):escapeHtml(matrixDifference(result.blockNumber,primaryBlock));return `<tr><td>${escapeHtml(result.name)}<br><code>${escapeHtml(result.url)}</code></td><td>${chain}</td><td>${block}</td><td>${detail}</td><td>${observed}</td><td><span class="rpc-status ${statusClass}">${result.status.toUpperCase()}</span></td></tr>`;}).join('');}
+async function runRpcMatrix(){
+  runRpcMatrixButton.disabled=true;
+  runRpcMatrixButton.textContent='Checking…';
+  rpcMatrixRows.innerHTML='<tr><td colspan="6">Checking official Arc endpoints…</td></tr>';
+  rpcMatrixMessage.textContent='Calling eth_chainId and eth_blockNumber from this browser. No wallet action is requested.';
+  const checkedAt=new Date().toISOString();
+  const results=await Promise.all(arcRpcEndpoints.map(async endpoint=>{
+    const startedAt=performance.now();
+    try{
+      const [chainId,block]=await Promise.all([rpcAt(endpoint.url,'eth_chainId',[]),rpcAt(endpoint.url,'eth_blockNumber',[])]);
+      const responseMs=Math.max(1,Math.round(performance.now()-startedAt));
+      const status=chainId.toLowerCase()===arcChain.chainId?'pass':'fail';
+      return {name:endpoint.name,url:endpoint.url,status,chainId,blockNumber:Number(BigInt(block)),responseMs};
+    }catch(error){return {name:endpoint.name,url:endpoint.url,status:'fail',chainId:null,blockNumber:null,responseMs:null,error:sanitizeWalletError(error)};}
+  }));
+  const primaryBlock=results.find(result=>result.name==='Primary')?.blockNumber??null;
+  results.forEach(result=>{if(result.status==='pass'&&primaryBlock!==null&&result.blockNumber!==null&&Math.abs(primaryBlock-result.blockNumber)>2)result.status='warn';});
+  renderRpcMatrix(results);
+  latestRpcMatrixReport={schema:'arcinvoice.arc-rpc-resilience-report.v1',checkedAt,network:{name:'Arc Testnet',expectedChainId:5042002},methods:['eth_chainId','eth_blockNumber'],privacy:'Read-only browser observation. No wallet, address, signature, transaction, seed phrase, or private key is included.',endpoints:results.map(result=>({...result,blockDifference:matrixDifference(result.blockNumber,primaryBlock)}))};
+  latestRpcMatrixText=`Arc RPC Resilience Report\nChecked at: ${checkedAt}\nExpected chain: 5042002 (${arcChain.chainId})\n\n${latestRpcMatrixReport.endpoints.map(result=>`${result.name}: ${result.status.toUpperCase()} · chain ${result.chainId?Number(BigInt(result.chainId)):'—'} · block ${result.blockNumber??'—'} · ${result.blockDifference} · ${result.responseMs?`${result.responseMs} ms`:'no response'}${result.error?` · ${result.error}`:''}`).join('\n')}\n\nClient-side observation only; not a network performance benchmark.`;
+  const passCount=results.filter(result=>result.status==='pass').length;
+  const warnCount=results.filter(result=>result.status==='warn').length;
+  rpcMatrixMessage.textContent=`Matrix complete: ${passCount} endpoint${passCount===1?'':'s'} in sync${warnCount?`, ${warnCount} needs review`:''}. Export the report for reproducible infrastructure feedback.`;
+  copyRpcMatrixButton.classList.remove('hidden');
+  downloadRpcMatrixButton.classList.remove('hidden');
+  runRpcMatrixButton.disabled=false;
+  runRpcMatrixButton.textContent='Run matrix';
+}
+async function copyRpcMatrix(){if(!latestRpcMatrixText)return;try{await navigator.clipboard.writeText(latestRpcMatrixText);copyRpcMatrixButton.textContent='Report copied ✓';}catch(error){copyRpcMatrixButton.textContent='Copy blocked';}}
+function downloadRpcMatrix(){if(latestRpcMatrixReport)downloadJson(latestRpcMatrixReport,`arc-rpc-resilience-${latestRpcMatrixReport.checkedAt.slice(0,10)}.json`);}
 function buildInvoiceLink(){const recipient=recipientInput.value.trim();const amount=amountInput.value.trim();if(!isAddress(recipient)||!/^\d+(\.\d{1,6})?$/.test(amount))return null;const params=new URLSearchParams({to:recipient,amount});const memo=memoInput.value.trim();if(memo)params.set('memo',memo);return `${window.location.origin}${window.location.pathname}?${params.toString()}#invoice`;}
 function renderInvoiceLink(){const link=buildInvoiceLink();shareLink.textContent=link||'Enter a valid recipient and amount to create a shareable invoice link.';return link;}
 async function copyInvoiceLink(){const link=renderInvoiceLink();if(!link){shareMessage.textContent='Enter a valid 0x recipient and positive USDC amount first.';return;}try{await navigator.clipboard.writeText(link);shareMessage.textContent='Invoice link copied. Share it with the payer.';}catch(error){shareMessage.textContent='Copy was blocked by this browser. Select the link above and copy it manually.';}}
@@ -254,6 +296,9 @@ copyDiagnosticButton.addEventListener('click',()=>{void copyDiagnostic();});
 runWalletCheckButton.addEventListener('click',()=>{void runWalletCompatibilityCheck();});
 switchWalletNetworkButton.addEventListener('click',()=>{void switchWalletToArcForLab();});
 downloadWalletReportButton.addEventListener('click',downloadWalletReport);
+runRpcMatrixButton.addEventListener('click',()=>{void runRpcMatrix();});
+copyRpcMatrixButton.addEventListener('click',()=>{void copyRpcMatrix();});
+downloadRpcMatrixButton.addEventListener('click',downloadRpcMatrix);
 [recipientInput,amountInput,memoInput].forEach(input=>input.addEventListener('input',renderInvoiceLink));
 loadInvoiceFromLink();
 renderTestRuns();
