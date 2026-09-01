@@ -31,6 +31,10 @@ const verifyForm=document.querySelector('#verifyForm');
 const txHashInput=document.querySelector('#txHash');
 const verifyResult=document.querySelector('#verifyResult');
 const testCaseSelect=document.querySelector('#testCase');
+const runWalletCheckButton=document.querySelector('#runWalletCheckButton');
+const switchWalletNetworkButton=document.querySelector('#switchWalletNetworkButton');
+const downloadWalletReportButton=document.querySelector('#downloadWalletReportButton');
+const walletLabMessage=document.querySelector('#walletLabMessage');
 // Arc uses USDC as its native gas token, with 18 decimals in wallet network metadata.
 const arcRpc='https://rpc.testnet.arc.io';
 const arcChain={chainId:'0x4cef52',chainName:'Arc Testnet',nativeCurrency:{name:'USDC',symbol:'USDC',decimals:18},rpcUrls:[arcRpc],blockExplorerUrls:['https://testnet.arcscan.app']};
@@ -40,6 +44,7 @@ let latestTestReport='';
 let latestDiagnosticReport='';
 let latestTestBundle;
 let walletConnectionInFlight=false;
+let latestWalletReport;
 const testRunStorageKey='arcinvoice-test-runs-v1';
 
 function isAddress(value){return /^0x[a-fA-F0-9]{40}$/.test(value);}
@@ -49,6 +54,67 @@ function formatNativeUsdc(value){const units=BigInt(value||'0x0');const whole=un
 function formatTokenUsdc(value){const units=BigInt(value||'0x0');const whole=units/10n**6n;const fraction=(units%10n**6n).toString().padStart(6,'0').replace(/0+$/,'');return `${whole.toLocaleString()}${fraction?`.${fraction}`:''} USDC`;}
 function usdcTransfer(transaction){if(transaction?.to?.toLowerCase()!==nativeUsdcContract||!transaction.input?.startsWith('0xa9059cbb')||transaction.input.length<138)return null;return {to:`0x${transaction.input.slice(34,74)}`,amount:`0x${transaction.input.slice(74,138)}`};}
 async function rpc(method,params){const response=await fetch(arcRpc,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method,params})});if(!response.ok)throw new Error('Arc RPC is temporarily unavailable.');const payload=await response.json();if(payload.error)throw new Error(payload.error.message||'Arc RPC returned an error.');return payload.result;}
+function setWalletLabCell(name,state,detail){const stateElement=document.querySelector(`#wallet${name}State`);const detailElement=document.querySelector(`#wallet${name}Detail`);stateElement.textContent=state.toUpperCase();stateElement.className=`wallet-state ${state}`;detailElement.textContent=detail;}
+function sanitizeWalletError(error){return String(error?.message||error||'Unknown wallet error').replace(/0x[a-fA-F0-9]{40,}/g,'[redacted]').replace(/\s+/g,' ').slice(0,180);}
+function walletProviderLabel(provider){if(provider?.isMetaMask)return 'MetaMask-compatible EIP-1193 provider detected';if(provider?.isRabby)return 'Rabby EIP-1193 provider detected';return provider?'EIP-1193 provider detected':'No injected EVM wallet detected';}
+async function runWalletCompatibilityCheck(){
+  runWalletCheckButton.disabled=true;
+  runWalletCheckButton.textContent='Checking…';
+  walletLabMessage.textContent='Running read-only compatibility checks. No signature or transaction is requested.';
+  const checkedAt=new Date().toISOString();
+  const report={schema:'arcinvoice.wallet-compatibility-report.v1',checkedAt,network:{name:'Arc Testnet',expectedChainId:5042002,rpc:arcRpc},privacy:'No wallet address, seed phrase, private key, signature, or transaction data is included.',checks:{}};
+  const provider=window.ethereum;
+  if(!provider){
+    setWalletLabCell('Provider','fail',walletProviderLabel());
+    setWalletLabCell('Account','warn','Install a wallet to test account access');
+    setWalletLabCell('Chain','warn','Wallet network cannot be checked');
+    report.checks.provider={status:'fail',detail:'No injected EVM wallet detected'};
+    report.checks.account={status:'not-tested'};
+    report.checks.chain={status:'not-tested'};
+  }else{
+    setWalletLabCell('Provider','pass',walletProviderLabel(provider));
+    report.checks.provider={status:'pass',detail:walletProviderLabel(provider)};
+    try{
+      const [accounts,chainId]=await Promise.all([provider.request({method:'eth_accounts'}),provider.request({method:'eth_chainId'})]);
+      const connected=Boolean(accounts?.[0]);
+      setWalletLabCell('Account',connected?'pass':'warn',connected?'Account access is available (address hidden)':'No account connected — use Connect wallet to test');
+      const onArc=String(chainId).toLowerCase()===arcChain.chainId;
+      setWalletLabCell('Chain',onArc?'pass':'warn',onArc?'Arc Testnet selected (5042002)':`Current chain ${Number(BigInt(chainId))}; switch to Arc Testnet`);
+      report.checks.account={status:connected?'pass':'warn',connected};
+      report.checks.chain={status:onArc?'pass':'warn',reportedChainId:String(chainId),expectedChainId:arcChain.chainId};
+    }catch(error){
+      const detail=sanitizeWalletError(error);
+      setWalletLabCell('Account','fail','Wallet did not return read-only account status');
+      setWalletLabCell('Chain','fail','Wallet did not return chain status');
+      report.checks.account={status:'fail',error:detail};
+      report.checks.chain={status:'fail',error:detail};
+    }
+  }
+  try{
+    const rpcChainId=await rpc('eth_chainId',[]);
+    const rpcMatches=rpcChainId.toLowerCase()===arcChain.chainId;
+    setWalletLabCell('Rpc',rpcMatches?'pass':'fail',rpcMatches?`Primary RPC reports Arc Testnet (${Number(BigInt(rpcChainId))})`:`RPC returned unexpected chain ${rpcChainId}`);
+    report.checks.rpc={status:rpcMatches?'pass':'fail',reportedChainId:rpcChainId};
+  }catch(error){
+    const detail=sanitizeWalletError(error);
+    setWalletLabCell('Rpc','fail','Primary RPC could not be reached from this browser');
+    report.checks.rpc={status:'fail',error:detail};
+  }
+  latestWalletReport=report;
+  downloadWalletReportButton.classList.remove('hidden');
+  walletLabMessage.textContent='Compatibility check complete. Download the sanitized JSON report when sharing a reproducible wallet or RPC issue.';
+  runWalletCheckButton.disabled=false;
+  runWalletCheckButton.textContent='Run compatibility check';
+}
+async function switchWalletToArcForLab(){
+  if(!window.ethereum){walletLabMessage.textContent='Install an EVM wallet first, then run the compatibility check again.';return;}
+  switchWalletNetworkButton.disabled=true;
+  switchWalletNetworkButton.textContent='Switching…';
+  try{await ensureArcNetwork();walletLabMessage.textContent='Arc Testnet was selected. Refreshing the compatibility results…';await runWalletCompatibilityCheck();}
+  catch(error){walletLabMessage.textContent=`Could not switch network: ${sanitizeWalletError(error)}`;}
+  finally{switchWalletNetworkButton.disabled=false;switchWalletNetworkButton.textContent='Switch to Arc Testnet';}
+}
+function downloadWalletReport(){if(latestWalletReport)downloadJson(latestWalletReport,`arc-wallet-compatibility-${latestWalletReport.checkedAt.slice(0,10)}.json`);}
 function buildInvoiceLink(){const recipient=recipientInput.value.trim();const amount=amountInput.value.trim();if(!isAddress(recipient)||!/^\d+(\.\d{1,6})?$/.test(amount))return null;const params=new URLSearchParams({to:recipient,amount});const memo=memoInput.value.trim();if(memo)params.set('memo',memo);return `${window.location.origin}${window.location.pathname}?${params.toString()}#invoice`;}
 function renderInvoiceLink(){const link=buildInvoiceLink();shareLink.textContent=link||'Enter a valid recipient and amount to create a shareable invoice link.';return link;}
 async function copyInvoiceLink(){const link=renderInvoiceLink();if(!link){shareMessage.textContent='Enter a valid 0x recipient and positive USDC amount first.';return;}try{await navigator.clipboard.writeText(link);shareMessage.textContent='Invoice link copied. Share it with the payer.';}catch(error){shareMessage.textContent='Copy was blocked by this browser. Select the link above and copy it manually.';}}
@@ -172,7 +238,7 @@ async function connectWallet(){
   }
   return account;
 }
-walletButton.addEventListener('click',async()=>{try{await connectWallet();}catch(error){walletButton.textContent='Connect wallet';showFriendlyError(error);}});
+walletButton.addEventListener('click',async()=>{try{await connectWallet();await runWalletCompatibilityCheck();}catch(error){walletButton.textContent='Connect wallet';showFriendlyError(error);}});
 disconnectButton.addEventListener('click',()=>{void disconnectWallet();});
 createButton.addEventListener('click',()=>document.querySelector('#invoice').scrollIntoView({behavior:'smooth'}));
 verifyButton.addEventListener('click',()=>document.querySelector('#verifier').scrollIntoView({behavior:'smooth',block:'center'}));
@@ -185,13 +251,18 @@ shareButton.addEventListener('click',()=>{void copyInvoiceLink();});
 copyReportButton.addEventListener('click',()=>{void copyTestReport();});
 runDiagnosticButton.addEventListener('click',()=>{void runDiagnostic();});
 copyDiagnosticButton.addEventListener('click',()=>{void copyDiagnostic();});
+runWalletCheckButton.addEventListener('click',()=>{void runWalletCompatibilityCheck();});
+switchWalletNetworkButton.addEventListener('click',()=>{void switchWalletToArcForLab();});
+downloadWalletReportButton.addEventListener('click',downloadWalletReport);
 [recipientInput,amountInput,memoInput].forEach(input=>input.addEventListener('input',renderInvoiceLink));
 loadInvoiceFromLink();
 renderTestRuns();
 void loadNetworkStatus();
+void runWalletCompatibilityCheck();
 if(window.ethereum){
   window.ethereum.on('accountsChanged',accounts=>{
     setConnectedAccount(accounts?.[0]);
+    void runWalletCompatibilityCheck();
   });
   window.ethereum.on('chainChanged',()=>window.location.reload());
   window.ethereum.request({method:'eth_accounts'}).then(accounts=>setConnectedAccount(accounts?.[0])).catch(()=>{});
