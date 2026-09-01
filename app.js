@@ -31,15 +31,15 @@ const verifyForm=document.querySelector('#verifyForm');
 const txHashInput=document.querySelector('#txHash');
 const verifyResult=document.querySelector('#verifyResult');
 const testCaseSelect=document.querySelector('#testCase');
-// Wallets require 18 native decimals for Arc's EVM network configuration.
-// The USDC ERC-20 transfer below still uses the token's 6 display decimals.
-const arcChain={chainId:'0x4cef52',chainName:'Arc Testnet',nativeCurrency:{name:'USDC',symbol:'USDC',decimals:18},rpcUrls:['https://rpc.drpc.testnet.arc.network'],blockExplorerUrls:['https://testnet.arcscan.app']};
-const arcRpc='https://rpc.testnet.arc.network';
+// Arc uses USDC as its native gas token, with 18 decimals in wallet network metadata.
+const arcRpc='https://rpc.testnet.arc.io';
+const arcChain={chainId:'0x4cef52',chainName:'Arc Testnet',nativeCurrency:{name:'USDC',symbol:'USDC',decimals:18},rpcUrls:[arcRpc],blockExplorerUrls:['https://testnet.arcscan.app']};
 const nativeUsdcContract='0x3600000000000000000000000000000000000000';
 let account;
 let latestTestReport='';
 let latestDiagnosticReport='';
 let latestTestBundle;
+let walletConnectionInFlight=false;
 const testRunStorageKey='arcinvoice-test-runs-v1';
 
 function isAddress(value){return /^0x[a-fA-F0-9]{40}$/.test(value);}
@@ -100,25 +100,37 @@ function saveTestRun(bundle){const runs=[bundle,...getTestRuns().filter(run=>run
 function createVerifiedReport(bundle){return `Arc Testnet verification report\nTest ID: ${bundle.testId}\nTest case: ${bundle.testCase}\nChecked at: ${bundle.checkedAt}\nChain ID: ${bundle.network.chainId}\nRPC: ${bundle.rpc.endpoint}\nRPC methods: ${bundle.rpc.methods.join(', ')}\nTransaction: ${bundle.transaction.hash}\nStatus: ${bundle.transaction.status}\nAmount: ${bundle.transaction.amount}\nFrom: ${bundle.transaction.from}\nTo: ${bundle.transaction.to||'—'}\nBlock: ${bundle.transaction.block}\nBlock time: ${bundle.transaction.blockTime}\nArcScan: ${bundle.transaction.arcscan}\n\nRead-only verification: no wallet connection or signature was requested.`;}
 function downloadTestBundle(){if(latestTestBundle)downloadJson(latestTestBundle,`${latestTestBundle.testId}.json`);}
 async function verifyTransaction(event){event.preventDefault();const hash=txHashInput.value.trim();if(!isTransactionHash(hash)){showVerification('<strong>Enter a valid transaction hash.</strong><span>It must start with 0x and contain 64 hexadecimal characters.</span>','error');return;}const submitButton=verifyForm.querySelector('button');submitButton.disabled=true;submitButton.textContent='Checking…';showVerification('<strong>Checking Arc Testnet…</strong><span>Looking up the transaction and final receipt.</span>','loading');try{const [transaction,receipt]=await Promise.all([rpc('eth_getTransactionByHash',[hash]),rpc('eth_getTransactionReceipt',[hash])]);if(!transaction){showVerification('<strong>No Arc Testnet transaction found.</strong><span>Check the hash and make sure the transaction was sent on Arc Testnet.</span>','error');return;}const successful=receipt?.status==='0x1';const pending=!receipt;const blockData=receipt?await rpc('eth_getBlockByNumber',[receipt.blockNumber,false]):null;const title=pending?'Transaction pending':successful?'Payment confirmed':'Transaction failed';const statusClass=pending?'pending':successful?'success':'error';const statusLabel=pending?'Pending':successful?'Finalized':'Failed';const timestamp=blockData?.timestamp?new Date(Number(BigInt(blockData.timestamp))*1000).toLocaleString():'Awaiting confirmation';const tokenTransfer=usdcTransfer(transaction);const paidTo=tokenTransfer?.to||transaction.to;const amount=tokenTransfer?formatTokenUsdc(tokenTransfer.amount):formatNativeUsdc(transaction.value);const blockNumber=receipt?Number(BigInt(receipt.blockNumber)).toLocaleString():'—';latestTestBundle={schema:'arcinvoice.arc-test-report.v1',testId:makeTestId(),testCase:testCaseSelect.value,checkedAt:new Date().toISOString(),network:{name:'Arc Testnet',chainId:5042002},rpc:{endpoint:arcRpc,methods:['eth_getTransactionByHash','eth_getTransactionReceipt',...(receipt?['eth_getBlockByNumber']:[])]},transaction:{hash,status:statusLabel,amount,from:transaction.from,to:paidTo||null,block:blockNumber,blockTime:timestamp,arcscan:`https://testnet.arcscan.app/tx/${hash}`},privacy:'Read-only verification. No wallet connection or signature was requested.'};saveTestRun(latestTestBundle);latestTestReport=createVerifiedReport(latestTestBundle);showVerification(`<div class="verify-heading"><strong>${title}</strong><a href="https://testnet.arcscan.app/tx/${hash}" target="_blank" rel="noreferrer">View on ArcScan ↗</a></div><dl><div><dt>Amount</dt><dd>${amount}</dd></div><div><dt>Status</dt><dd>${statusLabel}</dd></div><div><dt>From</dt><dd title="${transaction.from}">${shortenAddress(transaction.from)}</dd></div><div><dt>To</dt><dd title="${paidTo||''}">${shortenAddress(paidTo)}</dd></div><div><dt>Block</dt><dd>${blockNumber}</dd></div><div><dt>Time</dt><dd>${timestamp}</dd></div></dl><div class="test-report"><p>QA bundle ${latestTestBundle.testId} · public RPC data only</p><div><button type="button" id="copyVerifiedReport">Copy report</button><button type="button" id="downloadVerifiedBundle">Download JSON</button></div></div>`,statusClass);}catch(error){console.error(error);showVerification('<strong>Could not check this payment right now.</strong><span>Please try again in a moment. No wallet action was requested.</span>','error');}finally{submitButton.disabled=false;submitButton.textContent='Verify';}}
+function setConnectedAccount(nextAccount){
+  account=nextAccount;
+  if(!account){
+    walletButton.textContent='Connect wallet';
+    payButton.textContent='Connect wallet to pay';
+    disconnectButton.classList.add('hidden');
+    status.textContent='Ready';
+    status.style.background='';
+    status.style.color='';
+    return;
+  }
+  walletButton.textContent=`${account.slice(0,6)}…${account.slice(-4)}`;
+  disconnectButton.classList.remove('hidden');
+  payButton.textContent='Pay test USDC';
+  status.textContent='Wallet connected';
+}
 async function disconnectWallet(revokePermission=true){
+  let permissionsRevoked=false;
   if(revokePermission&&window.ethereum){
     disconnectButton.textContent='Disconnecting…';
-    try{await window.ethereum.request({method:'wallet_revokePermissions',params:[{eth_accounts:{}}]});}catch(error){console.info('Wallet permission revoke is not available in this wallet.',error);}
+    try{await window.ethereum.request({method:'wallet_revokePermissions',params:[{eth_accounts:{}}]});permissionsRevoked=true;}catch(error){console.info('Wallet permission revoke is not available in this wallet.',error);}
   }
-  account=undefined;
-  walletButton.textContent='Connect wallet';
-  payButton.textContent='Connect wallet to pay';
-  disconnectButton.classList.add('hidden');
+  setConnectedAccount(undefined);
   disconnectButton.textContent='Disconnect';
-  status.textContent='Ready';
-  status.style.background='';
-  status.style.color='';
+  notice.textContent=permissionsRevoked?'Wallet disconnected.':'Disconnected from this site. To use another account, select it in your wallet, then click Connect wallet.';
 }
 function showFriendlyError(error){
   const message=String(error?.message||'');
   status.textContent='Action needed';
   if(message.includes('same RPC endpoint')||message.includes('invalid chain ID')){
-    notice.innerHTML='Your wallet has an older Arc Testnet entry saved. Remove that old network from wallet settings, refresh this page, then connect again. The correct chain ID is <b>5042002</b>.';
+    notice.innerHTML='Your wallet has an older Arc Testnet entry saved. Remove the old Arc Testnet network in wallet settings, then add it again with chain ID <b>5042002</b> and RPC <b>https://rpc.testnet.arc.io</b>.';
     return;
   }
   if(error?.code===4001){notice.textContent='Connection cancelled. You can try again whenever you are ready.';return;}
@@ -132,20 +144,32 @@ function toNativeValue(value){
   if(displayUnits<=0n)throw new Error('Enter a valid positive USDC amount.');
   return `0x${(displayUnits*10n**12n).toString(16)}`;
 }
-async function connectWallet(){
+async function ensureArcNetwork(){
   if(!window.ethereum)throw new Error('Install MetaMask or another EVM wallet first.');
   try{
     await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:arcChain.chainId}]});
   }catch(error){
-    if(error.code!==4902)throw error;
+    if(error?.code!==4902)throw error;
     await window.ethereum.request({method:'wallet_addEthereumChain',params:[arcChain]});
+    await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:arcChain.chainId}]});
   }
-  const accounts=await window.ethereum.request({method:'eth_requestAccounts'});
-  account=accounts[0];
-  walletButton.textContent=`${account.slice(0,6)}…${account.slice(-4)}`;
-  disconnectButton.classList.remove('hidden');
-  payButton.textContent='Pay test USDC';
-  status.textContent='Wallet connected';
+}
+async function connectWallet(){
+  if(!window.ethereum)throw new Error('Install MetaMask or another EVM wallet first.');
+  if(walletConnectionInFlight)return account;
+  walletConnectionInFlight=true;
+  walletButton.disabled=true;
+  walletButton.textContent='Connecting…';
+  try{
+    const accounts=await window.ethereum.request({method:'eth_requestAccounts'});
+    const selectedAccount=accounts?.[0];
+    if(!selectedAccount)throw new Error('No wallet account was selected.');
+    await ensureArcNetwork();
+    setConnectedAccount(selectedAccount);
+  }finally{
+    walletConnectionInFlight=false;
+    walletButton.disabled=false;
+  }
   return account;
 }
 walletButton.addEventListener('click',async()=>{try{await connectWallet();}catch(error){walletButton.textContent='Connect wallet';showFriendlyError(error);}});
@@ -167,17 +191,15 @@ renderTestRuns();
 void loadNetworkStatus();
 if(window.ethereum){
   window.ethereum.on('accountsChanged',accounts=>{
-    account=accounts[0];
-    if(!account){void disconnectWallet(false);return;}
-    walletButton.textContent=account?`${account.slice(0,6)}…${account.slice(-4)}`:'Connect wallet';
-    payButton.textContent=account?'Pay test USDC':'Connect wallet to pay';
-    disconnectButton.classList.remove('hidden');
+    setConnectedAccount(accounts?.[0]);
   });
   window.ethereum.on('chainChanged',()=>window.location.reload());
+  window.ethereum.request({method:'eth_accounts'}).then(accounts=>setConnectedAccount(accounts?.[0])).catch(()=>{});
 }
 payButton.addEventListener('click',async()=>{
   try{
     if(!account)await connectWallet();
+    await ensureArcNetwork();
     const recipient=recipientInput.value.trim();
     const amount=amountInput.value.trim();
     if(!isAddress(recipient))throw new Error('Enter a valid 0x recipient wallet address.');
