@@ -18,6 +18,7 @@ A static, open-source USDC invoice and payment-quality tool for **Arc Testnet**.
 - **Payment QA bundles:** Each verified transaction can create a structured JSON record for reproducible test feedback. Recent runs remain only in the browser unless the user downloads them.
 - **Wallet Compatibility Lab:** Checks injected-wallet availability, read-only account access, selected chain, and primary Arc RPC connectivity. It never requests a signature or puts an address in the exported report.
 - **RPC Resilience Matrix:** Compares Arc's official Primary, Blockdaemon, dRPC, and QuickNode endpoints using `eth_chainId` and `eth_blockNumber`. It shows chain consistency, block difference, browser-observed response time, and a sanitized JSON export.
+- **Network Readiness Console:** Runs the network diagnostic, wallet compatibility check, and RPC Resilience Matrix together, then creates one sanitized JSON bundle for reproducible technical feedback. It clearly flags a wrong wallet chain without requesting a signature or transaction.
 
 ## Architecture
 

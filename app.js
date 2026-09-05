@@ -40,6 +40,10 @@ const copyRpcMatrixButton=document.querySelector('#copyRpcMatrixButton');
 const downloadRpcMatrixButton=document.querySelector('#downloadRpcMatrixButton');
 const rpcMatrixRows=document.querySelector('#rpcMatrixRows');
 const rpcMatrixMessage=document.querySelector('#rpcMatrixMessage');
+const runReadinessButton=document.querySelector('#runReadinessButton');
+const downloadReadinessButton=document.querySelector('#downloadReadinessButton');
+const readinessTitleStatus=document.querySelector('#readinessTitleStatus');
+const readinessMessage=document.querySelector('#readinessMessage');
 // Arc uses USDC as its native gas token, with 18 decimals in wallet network metadata.
 const arcRpc='https://rpc.testnet.arc.io';
 const arcChain={chainId:'0x4cef52',chainName:'Arc Testnet',nativeCurrency:{name:'USDC',symbol:'USDC',decimals:18},rpcUrls:[arcRpc],blockExplorerUrls:['https://testnet.arcscan.app']};
@@ -53,6 +57,7 @@ let walletConnectionInFlight=false;
 let latestWalletReport;
 let latestRpcMatrixReport;
 let latestRpcMatrixText='';
+let latestReadinessBundle;
 const testRunStorageKey='arcinvoice-test-runs-v1';
 
 function isAddress(value){return /^0x[a-fA-F0-9]{40}$/.test(value);}
@@ -157,6 +162,47 @@ async function runRpcMatrix(){
 }
 async function copyRpcMatrix(){if(!latestRpcMatrixText)return;try{await navigator.clipboard.writeText(latestRpcMatrixText);copyRpcMatrixButton.textContent='Report copied ✓';}catch(error){copyRpcMatrixButton.textContent='Copy blocked';}}
 function downloadRpcMatrix(){if(latestRpcMatrixReport)downloadJson(latestRpcMatrixReport,`arc-rpc-resilience-${latestRpcMatrixReport.checkedAt.slice(0,10)}.json`);}
+function readinessOutcome(){
+  const walletChecks=Object.values(latestWalletReport?.checks||{});
+  const walletFailures=walletChecks.filter(check=>check.status==='fail').length;
+  const walletWarnings=walletChecks.filter(check=>check.status==='warn').length;
+  const rpcFailures=(latestRpcMatrixReport?.endpoints||[]).filter(endpoint=>endpoint.status==='fail').length;
+  const rpcWarnings=(latestRpcMatrixReport?.endpoints||[]).filter(endpoint=>endpoint.status==='warn').length;
+  if(walletFailures||rpcFailures)return {label:'Needs review',detail:`${walletFailures+rpcFailures} check${walletFailures+rpcFailures===1?'':'s'} needs attention before sharing feedback.`};
+  if(walletWarnings)return {label:'Wallet action needed',detail:'Connect a wallet and select Arc Testnet before submitting a payment. The report is still safe to share as a reproducible pre-flight observation.'};
+  if(rpcWarnings)return {label:'Ready with observations',detail:`${rpcWarnings} RPC endpoint${rpcWarnings===1?'':'s'} was slightly out of sync during this browser observation.`};
+  return {label:'Readiness check complete',detail:'All available read-only checks completed. Download the bundle for reproducible technical feedback.'};
+}
+async function runReadinessCheck(){
+  runReadinessButton.disabled=true;
+  runReadinessButton.textContent='Checking…';
+  readinessTitleStatus.textContent='Running read-only pre-flight checks';
+  readinessMessage.textContent='Checking public RPC, wallet compatibility, and endpoint consistency. No signature or transaction is requested.';
+  try{
+    await Promise.all([runDiagnostic(),runWalletCompatibilityCheck(),runRpcMatrix()]);
+    const outcome=readinessOutcome();
+    latestReadinessBundle={
+      schema:'arcinvoice.arc-network-readiness.v1',
+      checkedAt:new Date().toISOString(),
+      network:{name:'Arc Testnet',chainId:5042002,primaryRpc:arcRpc},
+      outcome:outcome.label,
+      privacy:'Read-only browser observation. No wallet address, seed phrase, private key, signature, or transaction is included.',
+      diagnostic:latestDiagnosticReport||null,
+      walletCompatibility:latestWalletReport||null,
+      rpcResilience:latestRpcMatrixReport||null
+    };
+    readinessTitleStatus.textContent=outcome.label;
+    readinessMessage.textContent=outcome.detail;
+    downloadReadinessButton.classList.remove('hidden');
+  }catch(error){
+    readinessTitleStatus.textContent='Readiness check incomplete';
+    readinessMessage.textContent='One or more checks could not finish. Try again and include the time in a reproducible report.';
+  }finally{
+    runReadinessButton.disabled=false;
+    runReadinessButton.textContent='Run readiness check';
+  }
+}
+function downloadReadinessBundle(){if(latestReadinessBundle)downloadJson(latestReadinessBundle,`arc-network-readiness-${latestReadinessBundle.checkedAt.slice(0,10)}.json`);}
 function buildInvoiceLink(){const recipient=recipientInput.value.trim();const amount=amountInput.value.trim();if(!isAddress(recipient)||!/^\d+(\.\d{1,6})?$/.test(amount))return null;const params=new URLSearchParams({to:recipient,amount});const memo=memoInput.value.trim();if(memo)params.set('memo',memo);return `${window.location.origin}${window.location.pathname}?${params.toString()}#invoice`;}
 function renderInvoiceLink(){const link=buildInvoiceLink();shareLink.textContent=link||'Enter a valid recipient and amount to create a shareable invoice link.';return link;}
 async function copyInvoiceLink(){const link=renderInvoiceLink();if(!link){shareMessage.textContent='Enter a valid 0x recipient and positive USDC amount first.';return;}try{await navigator.clipboard.writeText(link);shareMessage.textContent='Invoice link copied. Share it with the payer.';}catch(error){shareMessage.textContent='Copy was blocked by this browser. Select the link above and copy it manually.';}}
@@ -201,9 +247,9 @@ async function waitForFinality(txHash,submittedAt,amount,recipient){
 async function copyTestReport(button=copyReportButton){if(!latestTestReport)return;try{await navigator.clipboard.writeText(latestTestReport);button.textContent='Test report copied ✓';}catch(error){button.textContent='Copy blocked by browser';}}
 function showVerification(message,type='info'){verifyResult.className=`verify-result ${type}`;verifyResult.innerHTML=message;}
 function makeTestId(){return `arc-test-${crypto.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`}`;}
-function getTestRuns(){try{const runs=JSON.parse(localStorage.getItem(testRunStorageKey)||'[]');return Array.isArray(runs)?runs:[];}catch(error){return [];}}
-function downloadJson(data,filename){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=filename;link.click();URL.revokeObjectURL(url);}
-function renderTestRuns(){const runs=getTestRuns();qaEmpty.classList.toggle('hidden',runs.length>0);qaRuns.classList.toggle('hidden',runs.length===0);qaRuns.innerHTML=runs.map((run,index)=>`<li class="qa-run"><div><strong>${run.testCase} · ${run.transaction.status}</strong><span>${run.testId} · ${shortenAddress(run.transaction.hash)} · ${new Date(run.checkedAt).toLocaleString()}</span></div><button type="button" data-run-index="${index}">Download JSON</button></li>`).join('');}
+function getTestRuns(){try{const runs=JSON.parse(localStorage.getItem(testRunStorageKey)||'[]');return Array.isArray(runs)?runs.filter(run=>run&&typeof run==='object'&&run.transaction&&typeof run.transaction==='object'):[];}catch(error){return [];}}
+function downloadJson(data,filename){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=filename;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+function renderTestRuns(){const runs=getTestRuns();qaEmpty.classList.toggle('hidden',runs.length>0);qaRuns.classList.toggle('hidden',runs.length===0);qaRuns.innerHTML=runs.map((run,index)=>{const transaction=run.transaction||{};const checkedAt=Date.parse(run.checkedAt||'')?new Date(run.checkedAt).toLocaleString():'Unknown time';return `<li class="qa-run"><div><strong>${escapeHtml(run.testCase||'Payment verification')} · ${escapeHtml(transaction.status||'Unknown')}</strong><span>${escapeHtml(run.testId||'Unknown test')} · ${escapeHtml(shortenAddress(transaction.hash||''))} · ${escapeHtml(checkedAt)}</span></div><button type="button" data-run-index="${index}">Download JSON</button></li>`;}).join('');}
 function saveTestRun(bundle){const runs=[bundle,...getTestRuns().filter(run=>run.testId!==bundle.testId)].slice(0,10);localStorage.setItem(testRunStorageKey,JSON.stringify(runs));renderTestRuns();}
 function createVerifiedReport(bundle){return `Arc Testnet verification report\nTest ID: ${bundle.testId}\nTest case: ${bundle.testCase}\nChecked at: ${bundle.checkedAt}\nChain ID: ${bundle.network.chainId}\nRPC: ${bundle.rpc.endpoint}\nRPC methods: ${bundle.rpc.methods.join(', ')}\nTransaction: ${bundle.transaction.hash}\nStatus: ${bundle.transaction.status}\nAmount: ${bundle.transaction.amount}\nFrom: ${bundle.transaction.from}\nTo: ${bundle.transaction.to||'—'}\nBlock: ${bundle.transaction.block}\nBlock time: ${bundle.transaction.blockTime}\nArcScan: ${bundle.transaction.arcscan}\n\nRead-only verification: no wallet connection or signature was requested.`;}
 function downloadTestBundle(){if(latestTestBundle)downloadJson(latestTestBundle,`${latestTestBundle.testId}.json`);}
@@ -299,6 +345,8 @@ downloadWalletReportButton.addEventListener('click',downloadWalletReport);
 runRpcMatrixButton.addEventListener('click',()=>{void runRpcMatrix();});
 copyRpcMatrixButton.addEventListener('click',()=>{void copyRpcMatrix();});
 downloadRpcMatrixButton.addEventListener('click',downloadRpcMatrix);
+runReadinessButton.addEventListener('click',()=>{void runReadinessCheck();});
+downloadReadinessButton.addEventListener('click',downloadReadinessBundle);
 [recipientInput,amountInput,memoInput].forEach(input=>input.addEventListener('input',renderInvoiceLink));
 loadInvoiceFromLink();
 renderTestRuns();
