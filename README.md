@@ -10,6 +10,12 @@ A static, open-source USDC invoice and payment-quality tool for **Arc Testnet**.
 
 **Network:** Arc Testnet · chain ID `5042002`
 
+## Related project: Arc Mainnet Desk
+
+This repository also contains [Arc Mainnet Desk](arc-mainnet-desk/README.md), a separate static, read-only QA and evidence workspace for mainnet-readiness review. It is intentionally independent from ArcInvoice's testnet payment flow: no wallet connection, signature, transaction submission, token market data, or remote persistence is included.
+
+It provides local readiness checklists, wallet journey records, RPC and receipt comparisons, public transaction inspection, SHA-256 evidence packs, and structured issue drafts. Its reports are point-in-time observations rather than official network or compatibility claims.
+
 ## What it includes
 
 - **Native-USDC invoice payment:** The payer enters a recipient and amount, then approves the payment in their own Arc Testnet wallet.
