@@ -34,6 +34,8 @@ The workspace does not request or accept recovery phrases, private keys, passwor
 
 Public blockchain values such as a transaction hash are only queried after the user supplies both an HTTPS endpoint and a valid transaction hash. Always verify endpoint ownership and results using official Arc sources before relying on them.
 
+For a precise request/data map, see [Architecture and data boundaries](docs/architecture.md). For reporting guidance, see the [security policy](SECURITY.md).
+
 ## Run locally
 
 This is dependency-free static HTML, CSS, and JavaScript.
