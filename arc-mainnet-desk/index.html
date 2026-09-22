@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#080817" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23796bff'/%3E%3Cpath d='M18 46 30 17h7l11 29h-8l-2-7H27l-2 7h-7Zm11-14h7l-3-10-4 10Z' fill='white'/%3E%3C/svg%3E" />
     <title>Arc Mainnet Desk — Readiness Workspace</title>
     <meta name="description" content="A safety-first mainnet readiness workspace for Arc builders." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -20,32 +21,61 @@
     <link rel="stylesheet" href="witness.css" />
     <link rel="stylesheet" href="release-pack.css" />
     <link rel="stylesheet" href="gate.css" />
+    <link rel="stylesheet" href="payment-lab.css" />
+    <link rel="stylesheet" href="payment-intent.css" />
+    <link rel="stylesheet" href="reconciliation.css" />
+    <link rel="stylesheet" href="share-request.css" />
+    <link rel="stylesheet" href="batch-reconciliation.css" />
+    <link rel="stylesheet" href="dashboard.css" />
+    <link rel="stylesheet" href="incident.css" />
+    <link rel="stylesheet" href="swap-inspector.css" />
+    <link rel="stylesheet" href="contract-watch.css" />
+    <link rel="stylesheet" href="scorecard.css" />
+    <link rel="stylesheet" href="merchant-receipt.css" />
+    <link rel="stylesheet" href="checkout-embed.css" />
+    <link rel="stylesheet" href="arc-handle.css" />
+    <link rel="stylesheet" href="agentic-brief.css" />
   </head>
-  <body>
+  <body data-workspace-mode="overview">
     <div class="grain"></div>
     <header class="nav wrap">
       <a class="brand" href="#top" aria-label="Arc Mainnet Desk home"><span class="brand-cube">A</span><span>arc<span>desk</span></span></a>
-      <nav><a href="#workspace">Workspace</a><a href="#evidence">Tx evidence</a><a href="#matrix">Wallet matrix</a><a href="#safety">Safety</a></nav>
-      <a href="#report" class="nav-button">Create QA brief <span>↗</span></a>
+      <nav><a href="#product-map">Overview</a><a href="#intent-lab">Payments</a><a href="#incident-lab">QA & reliability</a><a href="#release-pack">Release evidence</a></nav>
+      <a href="#reconciliation" class="nav-button">Open payment workspace <span>↓</span></a>
     </header>
 
     <main id="top">
       <section class="hero wrap">
         <div class="hero-copy">
-          <div class="overline"><i></i> Independent mainnet-readiness workspace</div>
-          <h1>Ship with clarity.<br /><em>Operate with confidence.</em></h1>
-          <p>Arc Mainnet Desk helps teams and builders prepare safer wallet flows, payment experiences, and reproducible QA before launch.</p>
-          <div class="hero-actions"><a class="primary" href="#workspace">Open workspace <span>↓</span></a><a class="quiet-link" href="#safety">Safety principles <span>→</span></a></div>
-          <p class="disclaimer"><span>✦</span><b>No market data. No wallet connection. No token listings.</b> This workspace is intentionally built for product readiness, not speculation.</p>
+          <div class="overline"><i></i> Independent payment-operations workspace</div>
+          <h1>USDC payments,<br /><em>operated with evidence.</em></h1>
+          <p>Arc Mainnet Desk helps merchant, support, and operations teams reconcile public USDC receipts, investigate exceptions, and create review-ready evidence.</p>
+          <div class="hero-actions"><a class="primary" href="#reconciliation">Reconcile a payment <span>↓</span></a><a class="quiet-link" href="#intent-lab">Verify a payment intent <span>→</span></a></div>
+          <p class="disclaimer"><span>✦</span><b>No custody. No wallet connection. No transaction submission.</b> This workspace reads public data and keeps local operational records in the browser.</p>
         </div>
         <div class="launch-visual" aria-label="Mainnet readiness visual">
           <div class="pulse p1"></div><div class="pulse p2"></div><div class="pulse p3"></div>
           <div class="launch-core"><span>ARC</span><small>READINESS</small></div>
           <div class="orbit-dot d1"></div><div class="orbit-dot d2"></div><div class="orbit-dot d3"></div>
-          <div class="visual-card card-rpc"><span class="tiny-dot"></span><b>Network surface</b><small>Configure official sources</small></div>
-          <div class="visual-card card-qa"><span>✓</span><b>QA-first</b><small>Build a reproducible brief</small></div>
+          <div class="visual-card card-rpc"><span class="tiny-dot"></span><b>Public receipt</b><small>Read-only verification</small></div>
+          <div class="visual-card card-qa"><span>✓</span><b>Ops-ready</b><small>Evidence before claims</small></div>
         </div>
       </section>
+
+      <section class="product-map wrap" id="product-map" aria-label="Product workflow map">
+        <div class="product-map-head"><div><div class="overline">Arc Mainnet Desk</div><h2>Payment operations,<br />made reviewable.</h2></div><p>Start with the operational job at hand. Every workflow stays client-side, read-only, and explicit about what its result means.</p></div>
+        <div class="workflow-grid">
+          <article class="workflow-card payments" id="payments"><div class="workflow-number">01</div><div class="workflow-icon">◈</div><span>PAYMENTS</span><h3>Verify and reconcile USDC payments.</h3><p>Decode a public receipt, compare a payment intent, then reconcile it against a merchant request.</p><div class="workflow-links"><a href="#intent-lab">Verify payment intent <b>→</b></a><a href="#reconciliation">Open reconciliation desk <b>→</b></a></div></article>
+          <article class="workflow-card quality" id="quality"><div class="workflow-number">02</div><div class="workflow-icon">⌘</div><span>QA & RELIABILITY</span><h3>Reproduce the issue. Keep the evidence.</h3><p>Compare RPC responses, inspect public receipts, and produce safer incident reports.</p><div class="workflow-links"><a href="#monitor">Run network diagnostics <b>→</b></a><a href="#agentic-brief">Design a safe agent workflow <b>→</b></a></div></article>
+          <article class="workflow-card release" id="release"><div class="workflow-number">03</div><div class="workflow-icon">✓</div><span>RELEASE READINESS</span><h3>Turn local checks into a reviewable handoff.</h3><p>Record wallet outcomes, create an evidence pack, and identify what is still missing before a release claim.</p><div class="workflow-links"><a href="#release-pack">Create evidence pack <b>→</b></a><a href="#release-gate">Open local release gate <b>→</b></a></div></article>
+        </div>
+        <div class="map-boundary"><span>◌</span><p><b>What this is:</b> independent tooling for public Arc Mainnet data and local QA records. <b>What it is not:</b> a wallet, custody service, payment processor, official Arc dashboard, or financial product.</p></div>
+      </section>
+
+      <div class="workflow-banner wrap" id="workflow-banner" hidden>
+        <div><span id="workflow-kicker">WORKFLOW</span><b id="workflow-title">Workspace</b></div>
+        <a href="#product-map" id="back-to-overview">← All workflows</a>
+      </div>
 
       <section class="guardrail wrap" aria-label="Product guardrails">
         <div><span>01</span><p><b>Honest telemetry</b><br />No simulated live status or prices.</p></div>
@@ -53,7 +83,7 @@
         <div><span>03</span><p><b>Evidence before claims</b><br />Track what a tester can reproduce.</p></div>
       </section>
 
-      <section class="workspace wrap" id="workspace">
+      <section class="workspace wrap tool-surface" data-workflow="quality" id="workspace">
         <div class="section-title"><div><div class="overline">The workspace</div><h2>Mainnet readiness,<br />made actionable.</h2></div><p>Choose a practical launch surface. Each item is a pre-flight check a real user or developer can validate before mainnet.</p></div>
         <div class="workspace-grid">
           <article class="work-card active" data-panel="wallet"><span class="work-index">01</span><div class="work-icon">⌁</div><h3>Wallet journeys</h3><p>Network switching, disconnect paths, wrong-network recovery, and human-readable error states.</p><button>Open checklist <span>→</span></button></article>
@@ -63,7 +93,7 @@
         <div class="check-panel" id="panel-output" aria-live="polite"></div>
       </section>
 
-      <section class="monitor wrap" id="monitor">
+      <section class="monitor wrap tool-surface" data-workflow="quality" id="monitor">
         <div class="monitor-copy"><div class="overline">Read-only RPC monitor</div><h2>Measure the network.<br />Keep the evidence.</h2><p>Run three standard, read-only JSON-RPC checks against an official endpoint: chain identity, latest block, and block freshness. No wallet is connected and no transaction can be sent.</p><div class="monitor-guard"><span>◌</span><p>Use only an official or trusted Arc RPC endpoint. The endpoint is used only for this browser session.</p></div></div>
         <div class="monitor-console">
           <div class="console-head"><span><i></i> DIAGNOSTIC CONSOLE</span><small>CLIENT-SIDE · READ ONLY</small></div>
@@ -75,7 +105,247 @@
         </div>
       </section>
 
-      <section class="evidence wrap" id="evidence">
+      <section class="payment-lab wrap tool-surface" data-workflow="payments" id="payment-lab">
+        <div class="payment-lab-copy">
+          <div class="overline">Arc payment reliability lab</div>
+          <h2>Observe the lifecycle.<br />Report only the evidence.</h2>
+          <p>Track one public transaction through Arc's two-state lifecycle. The lab distinguishes a transaction with no receipt from a final receipt, records the browser observation window, and calculates the fee shown by the supplied RPC response.</p>
+          <div class="payment-lab-model" aria-label="Arc transaction lifecycle model">
+            <div><span>01</span><b>Pending</b><small>No receipt returned</small></div>
+            <i>→</i>
+            <div><span>02</span><b>Final</b><small>Receipt includes a block</small></div>
+            <i>→</i>
+            <div><span>03</span><b>Outcome</b><small>Success or failed execution</small></div>
+          </div>
+          <div class="payment-lab-guard"><span>◌</span><p>The timer measures only how long this browser observed the supplied endpoint. It is not the transaction's submission-to-finality time and is not a network benchmark.</p></div>
+        </div>
+        <div class="payment-lab-console">
+          <div class="console-head"><span><i></i> PAYMENT RELIABILITY CONSOLE</span><small>CLIENT-SIDE · READ ONLY</small></div>
+          <label for="payment-rpc">Official JSON-RPC endpoint</label>
+          <input id="payment-rpc" type="url" inputmode="url" placeholder="https://your-official-rpc.example" autocomplete="url" />
+          <label for="payment-hash">Public transaction hash</label>
+          <input id="payment-hash" type="text" inputmode="text" spellcheck="false" autocomplete="off" maxlength="66" placeholder="0x… (64 hexadecimal characters)" />
+          <div class="payment-lab-actions"><button id="observe-payment" type="button">Start observation <span>→</span></button><button id="stop-payment" class="secondary" type="button" disabled>Stop</button></div>
+          <p class="console-help">Maximum observation window: 30 seconds · Poll interval: 2 seconds · No transaction is submitted</p>
+          <div class="payment-lab-results" id="payment-lab-results" aria-live="polite"><div class="empty-payment-lab"><span>◎</span><p>Awaiting an official endpoint<br />and public transaction hash.</p></div></div>
+          <button class="copy-payment-lab" id="copy-payment-lab" type="button" disabled>Copy reliability report</button>
+        </div>
+      </section>
+
+      <section class="intent-lab wrap tool-surface" data-workflow="payments" id="intent-lab">
+        <div class="intent-copy">
+          <div class="overline">Universal USDC payment intent</div>
+          <h2>Decode the transfer.<br />Verify the intent.</h2>
+          <p>Inspect a public Arc Mainnet receipt for USDC <code>Transfer</code> events from Arc’s documented system emitter, then compare the observed recipient and amount with the payment intent supplied by the reviewer. The result is an evidence record, not a settlement guarantee.</p>
+          <div class="intent-flow" aria-label="Payment intent verification workflow">
+            <div><span>01</span><b>Decode</b><small>Official USDC event logs</small></div><i>→</i>
+            <div><span>02</span><b>Compare</b><small>Recipient and 18-decimal amount</small></div><i>→</i>
+            <div><span>03</span><b>Record</b><small>Public-safe evidence report</small></div>
+          </div>
+          <div class="intent-contract"><span>USDC SYSTEM EMITTER</span><code>0xffffFFFfFFffffffffffffffFfFFFfffFFFfFFfE</code><small>Arc Mainnet · 18 decimals · Transfer events only</small></div>
+          <div class="intent-guard"><span>◌</span><p>No wallet connection, signing, sending, balance lookup, or address ownership claim. A “matched” result means only that a supplied public receipt contained a matching event.</p></div>
+        </div>
+        <div class="intent-console">
+          <div class="console-head"><span><i></i> PAYMENT INTENT VERIFIER</span><small>CLIENT-SIDE · READ ONLY</small></div>
+          <label for="intent-rpc">Arc Mainnet JSON-RPC endpoint</label>
+          <input id="intent-rpc" type="url" inputmode="url" placeholder="https://rpc.mainnet.arc.io" autocomplete="url" />
+          <label for="intent-hash">Public transaction hash</label>
+          <input id="intent-hash" type="text" spellcheck="false" autocomplete="off" maxlength="66" placeholder="0x… (64 hexadecimal characters)" />
+          <div class="intent-input-grid"><label for="intent-recipient">Expected recipient <span class="optional">optional</span><input id="intent-recipient" type="text" spellcheck="false" autocomplete="off" maxlength="42" placeholder="0x… (40 hexadecimal characters)" /></label><label for="intent-amount">Expected amount <span class="optional">optional</span><input id="intent-amount" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 25.50 USDC" /></label></div>
+          <button class="run-intent" id="verify-intent" type="button">Verify payment intent <span>→</span></button>
+          <p class="console-help">Checks Arc chain ID · receipt outcome · official Universal USDC Transfer logs · optional exact intent match</p>
+          <div class="intent-results" id="intent-results" aria-live="polite"><div class="empty-intent"><span>◈</span><p>Awaiting an Arc Mainnet endpoint,<br />public receipt, and optional intent.</p></div></div>
+          <button class="copy-intent" id="copy-intent" type="button" disabled>Copy payment intent evidence</button>
+        </div>
+      </section>
+
+      <section class="arc-handle wrap tool-surface" data-workflow="payments" id="arc-handle">
+        <div class="arc-handle-copy">
+          <div class="overline">ArcHandle · product preview</div>
+          <h2>Pay a person.<br />Not an address.</h2>
+          <p>A future Arc payment surface where a sender enters a verified X handle, reviews the recipient and amount, and approves a USDC transfer from their own embedded wallet.</p>
+          <div class="arc-handle-flow" aria-label="Proposed ArcHandle payment flow">
+            <div><span>01</span><b>Verify</b><small>X identity → fixed user ID</small></div><i>→</i>
+            <div><span>02</span><b>Review</b><small>Recipient and amount</small></div><i>→</i>
+            <div><span>03</span><b>Approve</b><small>Owner-controlled transaction</small></div>
+          </div>
+          <div class="arc-handle-guard"><span>◌</span><p><b>Preview only.</b> X sign-in, handle claims, wallet creation, and transfers are not enabled. No username lookup, wallet connection, account data collection, signature, or transaction occurs on this page.</p></div>
+        </div>
+        <form class="arc-handle-console" id="arc-handle-form">
+          <div class="console-head"><span><i></i> SEND BY X HANDLE</span><small>SAFE PREVIEW · NO CUSTODY</small></div>
+          <label for="arc-handle-recipient">Recipient X handle</label>
+          <div class="arc-handle-input"><span>@</span><input id="arc-handle-recipient" type="text" inputmode="text" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="15" placeholder="username" /></div>
+          <label for="arc-handle-amount">Amount <span class="optional">preview only</span></label>
+          <div class="arc-handle-input amount"><input id="arc-handle-amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00" /><span>USDC</span></div>
+          <button class="arc-handle-check" id="arc-handle-check" type="submit">Review payment route <span>→</span></button>
+          <p class="console-help">A production version resolves an X User ID only after OAuth verification; it never routes funds based on an unverified username.</p>
+          <div class="arc-handle-result" id="arc-handle-result" aria-live="polite"><div class="arc-handle-empty"><span>◎</span><p>Enter a handle to preview<br />the safe payment route.</p></div></div>
+        </form>
+      </section>
+
+      <section class="swap-inspector wrap tool-surface" data-workflow="payments" id="swap-inspector">
+        <div class="swap-copy">
+          <div class="overline">Arc integration readiness scan</div>
+          <h2>Validate the integration.<br />Before you ship.</h2>
+          <p>Check whether an Arc integration contract and its proposed output asset are deployed on the expected network, whether the endpoint is current, and whether standard token metadata can be read. The scan is read-only: it never connects a wallet, requests an approval, fetches a price, or executes a swap.</p>
+          <div class="swap-flow" aria-label="Swap route inspection workflow">
+            <div><span>01</span><b>Identify</b><small>Check Arc chain ID</small></div><i>→</i>
+            <div><span>02</span><b>Validate</b><small>Read code and metadata</small></div><i>→</i>
+            <div><span>03</span><b>Review</b><small>Export the evidence</small></div>
+          </div>
+          <div class="swap-boundary"><span>◌</span><p><b>Claim boundary:</b> a deployed contract is not an endorsement. This tool cannot establish liquidity, a safe price, ownership, audit status, or production readiness. Only use addresses obtained from the protocol’s official documentation.</p></div>
+        </div>
+        <div class="swap-console">
+          <div class="console-head"><span><i></i> INTEGRATION READINESS SCAN</span><small>CLIENT-SIDE · READ ONLY</small></div>
+          <label for="swap-rpc">Arc Mainnet JSON-RPC endpoint</label>
+          <input id="swap-rpc" type="url" inputmode="url" value="https://rpc.mainnet.arc.io" autocomplete="url" />
+          <label for="swap-router">Integration contract <span class="optional">public address</span></label>
+          <input id="swap-router" type="text" inputmode="text" spellcheck="false" autocomplete="off" maxlength="42" placeholder="0x… (contract from official docs)" />
+          <label for="swap-asset">Referenced asset <span class="optional">public token address</span></label>
+          <input id="swap-asset" type="text" inputmode="text" spellcheck="false" autocomplete="off" maxlength="42" placeholder="0x… (asset from official docs)" />
+          <button class="run-swap-inspector" id="run-swap-inspector" type="button">Run readiness scan <span>→</span></button>
+          <p class="console-help">Calls: <code>eth_chainId</code> · <code>eth_getBlockByNumber</code> · <code>eth_getCode</code> · optional ERC-20 <code>symbol</code>/<code>decimals</code></p>
+          <div class="swap-results" id="swap-results" aria-live="polite"><div class="empty-swap"><span>◇</span><p>Enter published contract addresses.<br /><small>No request has been made.</small></p></div></div>
+          <button class="copy-swap-report" id="copy-swap-report" type="button" disabled>Copy readiness report</button>
+        </div>
+      </section>
+
+      <section class="contract-watch wrap tool-surface" data-workflow="quality" id="contract-watch">
+        <div class="contract-watch-copy">
+          <div class="overline">Arc contract change watch</div>
+          <h2>Record the contract.<br />Notice the change.</h2>
+          <p>Capture a local, point-in-time snapshot of a public Arc Mainnet contract. A later scan compares the chain ID, bytecode fingerprint, and best-effort ERC-20 metadata against the snapshot stored in this browser.</p>
+          <div class="contract-watch-flow" aria-label="Contract monitoring workflow"><div><span>01</span><b>Scan</b><small>Read public bytecode</small></div><i>→</i><div><span>02</span><b>Compare</b><small>Use local snapshot</small></div><i>→</i><div><span>03</span><b>Export</b><small>Review-ready evidence</small></div></div>
+          <div class="contract-watch-guard"><span>◌</span><p>Snapshots never leave this browser. A changed bytecode fingerprint is a review signal—not evidence of a malicious change, ownership change, upgradeability, audit status, or official Arc conclusion.</p></div>
+        </div>
+        <div class="contract-watch-console">
+          <div class="console-head"><span><i></i> CONTRACT CHANGE WATCH</span><small>CLIENT-SIDE · READ ONLY</small></div>
+          <label for="watch-rpc">Arc Mainnet JSON-RPC endpoint</label>
+          <input id="watch-rpc" type="url" inputmode="url" value="https://rpc.mainnet.arc.io" autocomplete="url" />
+          <label for="watch-contract">Public contract address</label>
+          <input id="watch-contract" type="text" inputmode="text" spellcheck="false" autocomplete="off" maxlength="42" placeholder="0x… (40 hexadecimal characters)" />
+          <button class="run-contract-watch" id="run-contract-watch" type="button">Scan and compare <span>→</span></button>
+          <p class="console-help">Calls: <code>eth_chainId</code> · <code>eth_getBlockByNumber</code> · <code>eth_getCode</code> · optional ERC-20 <code>symbol</code>/<code>decimals</code></p>
+          <div class="contract-watch-results" id="contract-watch-results" aria-live="polite"><div class="empty-contract-watch"><span>◌</span><p>Awaiting an Arc contract address.<br /><small>No snapshot has been created.</small></p></div></div>
+          <div class="contract-watch-actions"><button class="save-contract-snapshot" id="save-contract-snapshot" type="button" disabled>Save local snapshot</button><button class="copy-contract-report" id="copy-contract-report" type="button" disabled>Copy watch report</button></div>
+        </div>
+      </section>
+
+      <section class="scorecard wrap tool-surface" data-workflow="release" id="scorecard">
+        <div class="scorecard-copy">
+          <div class="overline">Arc mainnet integration scorecard</div>
+          <h2>One handoff.<br />Only earned signals.</h2>
+          <p>Turn local browser evidence into a compact technical-review summary. The scorecard includes only checks completed in this browser session; it never fills missing evidence with assumptions.</p>
+          <div class="scorecard-boundary"><span>◌</span><p><b>Claim boundary:</b> “Ready for technical review” means the recorded local checks are complete. It is not an audit, deployment approval, security review, compatibility certification, or official Arc endorsement.</p></div>
+        </div>
+        <div class="scorecard-console">
+          <div class="console-head"><span><i></i> TECHNICAL REVIEW SCORECARD</span><small>LOCAL EVIDENCE · READ ONLY</small></div>
+          <div class="scorecard-intro"><b>Included evidence</b><span>Network · Payments · Integration · Contract watch · Incident readiness · Privacy posture</span></div>
+          <button class="generate-scorecard" id="generate-scorecard" type="button">Generate scorecard <span>→</span></button>
+          <div class="scorecard-results" id="scorecard-results" aria-live="polite"><div class="empty-scorecard"><span>◈</span><p>No scorecard generated yet.<br /><small>Run available tools first, then generate a local handoff.</small></p></div></div>
+          <button class="copy-scorecard" id="copy-scorecard" type="button" disabled>Copy technical-review summary</button>
+        </div>
+      </section>
+
+      <section class="reconciliation wrap tool-surface" data-workflow="payments" id="reconciliation">
+        <div class="reconciliation-copy">
+          <div class="overline">Merchant payment reconciliation</div>
+          <h2>From payment intent<br />to an auditable outcome.</h2>
+          <p>Create a local payment request, then reconcile a public Arc Mainnet receipt against its recipient, exact USDC amount, and optional expiry. Designed for support and operations workflows where the conclusion must be explainable.</p>
+          <div class="reconciliation-rules"><div><span>✓</span><p><b>Exact amount</b><br />Compares base-unit USDC values.</p></div><div><span>✓</span><p><b>Receipt-aware</b><br />Separates failed, late, and duplicate outcomes.</p></div><div><span>✓</span><p><b>Evidence-ready</b><br />Creates a reviewable local record.</p></div></div>
+          <div class="reconciliation-guard"><span>◌</span><p>A local merchant reference is not written onchain and is not treated as proof of payment purpose. Reconciliation is based only on a supplied public receipt.</p></div>
+        </div>
+        <div class="reconciliation-console">
+          <div class="console-head"><span><i></i> PAYMENT RECONCILIATION DESK</span><small>LOCAL INTENT · READ ONLY</small></div>
+          <div class="reconcile-stage"><b>01 · LOCAL PAYMENT REQUEST</b><span>Nothing is uploaded</span></div>
+          <div class="reconcile-grid"><label for="reconcile-recipient">Merchant recipient<input id="reconcile-recipient" type="text" spellcheck="false" autocomplete="off" maxlength="42" placeholder="0x… (40 hexadecimal characters)" /></label><label for="reconcile-amount">Requested amount<input id="reconcile-amount" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g. 25.50 USDC" /></label></div>
+          <div class="reconcile-grid"><label for="reconcile-reference">Merchant reference <span class="optional">optional</span><input id="reconcile-reference" type="text" maxlength="80" placeholder="e.g. INV-2026-001" /></label><label for="reconcile-expiry">Payment expiry <span class="optional">optional</span><input id="reconcile-expiry" type="datetime-local" /></label></div>
+          <button class="save-intent" id="save-reconcile-intent" type="button">Create local payment request <span>→</span></button>
+          <div class="reconcile-request" id="reconcile-request" aria-live="polite"><span>LOCAL REQUEST</span><p>Create an intent to prepare reconciliation.</p></div>
+          <button class="copy-share-request" id="copy-share-request" type="button" disabled>Copy shareable verification link <span>↗</span></button>
+              <p class="share-request-note">The link includes only the public recipient, requested amount, and optional expiry. Merchant references stay local; it never requests a wallet action.</p>
+          <div class="checkout-kit" id="checkout-kit" hidden>
+            <div class="checkout-kit-head"><b>01B · CHECKOUT HANDOFF</b><span id="checkout-request-status">VALIDATING REQUEST</span></div>
+            <p>Generate a minimal payment-link snippet for a merchant site. It opens this read-only payment request; it does not initiate, sign, or submit a transaction.</p>
+            <div class="checkout-actions"><button id="generate-checkout-embed" type="button">Generate checkout snippet <span>→</span></button><button id="copy-checkout-embed" type="button" disabled>Copy embed code</button></div>
+            <pre class="checkout-code" id="checkout-code" aria-live="polite">Create a local request to generate a checkout snippet.</pre>
+          </div>
+          <div class="reconcile-stage"><b>02 · PUBLIC RECEIPT RECONCILIATION</b><span>Arc Mainnet only</span></div>
+          <label for="reconcile-rpc">Arc Mainnet JSON-RPC endpoint</label><input id="reconcile-rpc" type="url" inputmode="url" autocomplete="url" placeholder="https://rpc.mainnet.arc.io" />
+          <label for="reconcile-hash">Public transaction hash</label><input id="reconcile-hash" type="text" spellcheck="false" autocomplete="off" maxlength="66" placeholder="0x… (64 hexadecimal characters)" />
+          <button class="run-reconciliation" id="run-reconciliation" type="button">Reconcile payment <span>→</span></button>
+          <div class="reconciliation-results" id="reconciliation-results" aria-live="polite"><div class="empty-reconciliation"><span>◎</span><p>Create a local payment request,<br />then supply a public receipt.</p></div></div>
+          <div class="receipt-actions"><button class="copy-reconciliation" id="copy-reconciliation" type="button" disabled>Copy reconciliation evidence</button><button class="download-receipt" id="download-receipt" type="button" disabled>Download merchant receipt <span>↓</span></button></div>
+          <p class="merchant-receipt-note">Receipt exports contain the local request and public transaction details only. They are a review aid, not an invoice, settlement confirmation, or official Arc record.</p>
+          <div class="reconcile-stage batch-stage"><b>03 · BATCH RECONCILIATION</b><span>Up to 20 public receipts</span></div>
+          <p class="batch-intro">Review multiple receipts against the current local payment request. Hashes are processed in this browser, one at a time, to keep the evidence trail readable.</p>
+          <label for="batch-hashes">Public transaction hashes <span class="optional">one per line · maximum 20</span></label>
+          <textarea id="batch-hashes" rows="5" spellcheck="false" autocomplete="off" placeholder="0x…\n0x…\n0x…"></textarea>
+          <button class="run-batch" id="run-batch" type="button">Run batch reconciliation <span>→</span></button>
+          <div class="batch-results" id="batch-results" aria-live="polite"><div class="empty-reconciliation"><span>◎</span><p>Create a local payment request,<br />then add public transaction hashes.</p></div></div>
+          <div class="batch-actions"><button class="copy-batch" id="copy-batch" type="button" disabled>Copy batch evidence</button><button class="download-batch" id="download-batch" type="button" disabled>Download CSV <span>↓</span></button></div>
+          <p class="batch-note">Batch output is a local review aid, not a settlement, accounting, ownership, or official Arc conclusion.</p>
+        </div>
+      </section>
+
+      <section class="incident-lab wrap tool-surface" data-workflow="quality" id="incident-lab">
+        <div class="incident-copy">
+          <div class="overline">Arc developer incident kit</div>
+          <h2>Reproduce the failure.<br />Hand engineers evidence.</h2>
+          <p>Run one allowlisted, read-only JSON-RPC request against one or two trusted endpoints. Compare normalized responses and browser-observed latency, then export a review-ready report with endpoint credentials and sensitive fields redacted locally.</p>
+          <div class="incident-flow" aria-label="Incident reproduction workflow">
+            <div><span>01</span><b>Reproduce</b><small>Allowlisted read-only call</small></div>
+            <i>→</i><div><span>02</span><b>Compare</b><small>Response and latency</small></div>
+            <i>→</i><div><span>03</span><b>Handoff</b><small>Redacted evidence draft</small></div>
+          </div>
+          <div class="incident-guard"><span>◌</span><p>Only the RPC host is retained in reports. URL credentials and query strings are discarded. Redaction is a safety aid, not a guarantee—review every export before sharing.</p></div>
+        </div>
+        <div class="incident-console">
+          <div class="console-head"><span><i></i> DEVELOPER INCIDENT KIT</span><small>CLIENT-SIDE · READ ONLY</small></div>
+          <label for="incident-rpc-a">Trusted RPC endpoint A</label>
+          <input id="incident-rpc-a" type="url" inputmode="url" placeholder="https://rpc.mainnet.arc.io" autocomplete="url" />
+          <label for="incident-rpc-b">Trusted RPC endpoint B <span class="optional">optional</span></label>
+          <input id="incident-rpc-b" type="url" inputmode="url" placeholder="https://second-trusted-rpc.example" autocomplete="url" />
+          <div class="incident-query-grid">
+            <label for="incident-method">Read-only method<select id="incident-method"><option>eth_chainId</option><option>eth_blockNumber</option><option>eth_getBlockByNumber</option><option>eth_getTransactionByHash</option><option>eth_getTransactionReceipt</option><option>eth_getCode</option><option>eth_getBalance</option><option>eth_call</option><option>net_version</option><option>web3_clientVersion</option></select></label>
+            <label for="incident-params">Parameters as JSON array<textarea id="incident-params" rows="3" spellcheck="false">[]</textarea></label>
+          </div>
+          <button class="run-incident" id="run-incident" type="button">Run safe reproduction <span>→</span></button>
+          <p class="console-help">10-second timeout per endpoint · Export includes method, redacted parameters, hosts, observations, and reproduction steps · No wallet · No signing · No write methods</p>
+          <div class="incident-results" id="incident-results" aria-live="polite"><div class="empty-incident"><span>⌘</span><p>Awaiting a trusted endpoint<br />and read-only request.</p></div></div>
+          <button class="copy-incident" id="copy-incident" type="button" disabled>Copy triage-ready incident report</button>
+        </div>
+      </section>
+
+      <section class="agentic-brief wrap tool-surface" data-workflow="quality" id="agentic-brief">
+        <div class="agentic-copy">
+          <div class="overline">Agentic operations pattern</div>
+          <h2>Give agents a bounded<br />operational job.</h2>
+          <p>Model an agent that reads public evidence, groups exceptions, and proposes a human-review queue. It never controls a wallet, signs a transaction, or makes a payment decision.</p>
+          <div class="agentic-boundary"><span>◌</span><p><b>Design canvas only.</b> No model, wallet, remote service, or transaction is invoked from this page.</p></div>
+        </div>
+        <form class="agentic-console" id="agentic-form">
+          <div class="agentic-console-head"><span><i></i> AGENT WORKFLOW CANVAS</span><small>LOCAL · NON-CUSTODIAL</small></div>
+          <label for="agentic-goal">Operational goal <span class="optional">optional</span></label>
+          <input id="agentic-goal" maxlength="140" placeholder="e.g. Triage unmatched USDC payment receipts" />
+          <fieldset>
+            <legend>Evidence the agent may read</legend>
+            <label><input id="agentic-receipts" type="checkbox" checked /> Public transaction receipts</label>
+            <label><input id="agentic-intents" type="checkbox" checked /> Browser-local payment requests</label>
+            <label><input id="agentic-rpc" type="checkbox" /> Read-only RPC diagnostics</label>
+          </fieldset>
+          <fieldset>
+            <legend>Required human boundary</legend>
+            <label><input id="agentic-review" type="checkbox" checked /> Human approves every next action</label>
+            <label><input id="agentic-no-wallet" type="checkbox" checked /> No wallet access or signing authority</label>
+          </fieldset>
+          <button class="agentic-button" id="generate-agentic-brief" type="submit">Generate workflow brief <span>→</span></button>
+          <div class="agentic-output" id="agentic-output" aria-live="polite"><span>◎</span><p>Choose evidence boundaries to generate a review-ready operating brief.</p></div>
+          <button class="agentic-copy-button" id="copy-agentic-brief" type="button" disabled>Copy workflow brief</button>
+        </form>
+      </section>
+
+      <section class="evidence wrap tool-surface" data-workflow="quality" id="evidence">
         <div class="evidence-copy"><div class="overline">Transaction evidence inspector</div><h2>Inspect the outcome.<br />Keep the proof.</h2><p>Look up a transaction through an official JSON-RPC endpoint and turn the observed result into a public-safe QA record. This tool only reads public chain data.</p><div class="evidence-guard"><span>◌</span><p>No wallet connection, signature, or transaction request. A transaction result is reported only when the supplied endpoint returns it.</p></div><div class="evidence-methods"><code>eth_chainId</code><code>eth_getTransactionByHash</code><code>eth_getTransactionReceipt</code><code>eth_getBlockByNumber</code></div></div>
         <div class="evidence-console">
           <div class="console-head"><span><i></i> EVIDENCE CONSOLE</span><small>CLIENT-SIDE · READ ONLY</small></div>
@@ -89,7 +359,7 @@
         </div>
       </section>
 
-      <section class="network wrap" id="network">
+      <section class="network wrap tool-surface" data-workflow="quality" id="network">
         <div class="network-copy"><div class="overline">Network configuration validator</div><h2>Validate the route<br />before the user arrives.</h2><p>Compare the Chain ID returned by a supplied RPC endpoint with the expected Chain ID, and validate the public explorer URL before linking users to it.</p><div class="network-guard"><span>◌</span><p>Only <code>eth_chainId</code> is called. Explorer URLs are parsed locally and are never opened or fetched.</p></div></div>
         <div class="network-console">
           <div class="console-head"><span><i></i> CONFIG VALIDATOR</span><small>CLIENT-SIDE · READ ONLY</small></div>
@@ -102,7 +372,7 @@
         </div>
       </section>
 
-      <section class="consistency wrap" id="consistency">
+      <section class="consistency wrap tool-surface" data-workflow="quality" id="consistency">
         <div class="consistency-copy"><div class="overline">RPC consistency checker</div><h2>Compare the sources.<br />Expose the difference.</h2><p>Run the same read-only checks against two supplied official RPC endpoints and compare chain identity, latest block, block age, and round-trip time.</p><div class="consistency-guard"><span>◌</span><p>Each endpoint receives only <code>eth_chainId</code>, <code>eth_blockNumber</code>, and <code>eth_getBlockByNumber</code>. A local threshold of ≤1 block is clearly labelled, not treated as an official SLA.</p></div></div>
         <div class="consistency-console">
           <div class="console-head"><span><i></i> CONSISTENCY LAB</span><small>CLIENT-SIDE · READ ONLY</small></div>
@@ -114,7 +384,7 @@
         </div>
       </section>
 
-      <section class="witness wrap" id="receipt-witness">
+      <section class="witness wrap tool-surface" data-workflow="quality" id="receipt-witness">
         <div class="witness-copy"><div class="overline">Cross-RPC receipt witness</div><h2>Ask two sources.<br />Keep both answers.</h2><p>Read one public transaction receipt from two supplied official RPC endpoints and compare their observed chain identity, block number, block hash, and receipt status.</p><div class="witness-guard"><span>◌</span><p>This is an observation of the supplied sources at one moment in time. It does not establish finality, endpoint ownership, or official network status.</p></div></div>
         <div class="witness-console">
           <div class="console-head"><span><i></i> RECEIPT WITNESS</span><small>CLIENT-SIDE · READ ONLY</small></div>
@@ -127,7 +397,7 @@
         </div>
       </section>
 
-      <section class="resolver wrap" id="resolver">
+      <section class="resolver wrap tool-surface" data-workflow="quality" id="resolver">
         <div class="resolver-copy"><div class="overline">Explorer link resolver</div><h2>Construct the link.<br />Keep the destination clear.</h2><p>Create a conventional explorer route for a transaction hash or public address from a supplied official explorer base URL. The link is constructed in this browser and is never opened automatically.</p><div class="resolver-guard"><span>◌</span><p>Uses standard <code>/tx/</code> and <code>/address/</code> routes. Confirm the final destination against Arc’s official explorer before sharing.</p></div></div>
         <div class="resolver-console">
           <div class="console-head"><span><i></i> LINK RESOLVER</span><small>LOCAL · NO AUTO-OPEN</small></div>
@@ -140,7 +410,7 @@
         </div>
       </section>
 
-      <section class="matrix wrap" id="matrix">
+      <section class="matrix wrap tool-surface" data-workflow="quality" id="matrix">
         <div class="matrix-head"><div><div class="overline">Compatibility lab</div><h2>Test the journey,<br />not just the connection.</h2><p>A local matrix for recording verified wallet behavior across the key steps a user encounters. Every entry begins as untested; no compatibility is implied.</p></div><div class="matrix-legend"><span><i class="pass"></i> Passed</span><span><i class="test"></i> Needs testing</span><span><i class="issue"></i> Known issue</span></div></div>
         <div class="matrix-shell">
           <div class="matrix-top"><div><span>LOCAL TEST MATRIX</span><small id="matrix-summary">0 checks recorded · stored in this browser</small></div><button id="export-matrix" type="button">Copy matrix report</button></div>
@@ -149,9 +419,13 @@
         </div>
       </section>
 
-      <section class="changelog wrap" id="changelog">
+      <section class="changelog wrap tool-surface" data-workflow="release" id="changelog">
         <div class="changelog-intro"><div class="overline">Public release notes</div><h2>Show the work.<br />Keep the claims precise.</h2><p>Each entry describes a shipped product capability, its intended test surface, and the boundary of what it does not claim. This makes progress easy to review without overstating network or wallet compatibility.</p><div class="ledger-meta"><span><i></i> Evidence-led product log</span><span>Independent builder project</span></div></div>
         <div class="release-log">
+          <article class="release-item featured"><div class="release-stamp"><b>v1.5</b><span>18 Sep 2026</span></div><div class="release-body"><div class="release-label">SHIPPED · MERCHANT OPERATIONS</div><h3>Payment reconciliation desk</h3><p>Added a local payment-request workflow that reconciles a public Arc Mainnet USDC receipt against exact amount, recipient, optional expiry, and duplicate event count—then creates evidence for support review.</p><div class="release-tags"><span>Merchant workflow</span><span>Exact USDC amount</span><span>Expiry review</span><span>Duplicate detection</span></div><div class="claim-boundary"><b>Claim boundary</b><p>Reconciliation records data in a supplied receipt against a locally created intent. It does not establish legal settlement, ownership, accounting finality, or an official Arc conclusion.</p></div></div></article>
+          <article class="release-item featured"><div class="release-stamp"><b>v1.6</b><span>19 Sep 2026</span></div><div class="release-body"><div class="release-label">SHIPPED · ARC COMPATIBILITY</div><h3>System-emitter USDC decoding</h3><p>Updated payment verification for Arc’s documented USDC runtime: 18-decimal amount handling and Transfer events emitted by the system emitter. The verifier still compares only public receipt data with a supplied payment intent.</p><div class="release-tags"><span>18-decimal USDC</span><span>System emitter</span><span>Intent match</span><span>Read-only</span></div><div class="claim-boundary"><b>Claim boundary</b><p>A matched result confirms only matching data in one supplied public receipt. It does not prove settlement, address ownership, recipient control, payment purpose, or official Arc approval.</p></div></div></article>
+          <article class="release-item featured"><div class="release-stamp"><b>v1.3</b><span>18 Sep 2026</span></div><div class="release-body"><div class="release-label">SHIPPED · INCIDENT REPRODUCTION</div><h3>RPC incident reproducer and privacy redactor</h3><p>Added an allowlisted read-only RPC runner for one or two trusted endpoints, with normalized comparison, bounded requests, and a locally redacted Markdown incident report.</p><div class="release-tags"><span>Safe allowlist</span><span>Response comparison</span><span>Privacy redaction</span><span>Repro report</span></div><div class="claim-boundary"><b>Claim boundary</b><p>The output records browser observations from supplied endpoints. It does not prove endpoint ownership, diagnose network health, or guarantee that an export contains no sensitive data.</p></div></div></article>
+          <article class="release-item featured"><div class="release-stamp"><b>v1.2</b><span>17 Sep 2026</span></div><div class="release-body"><div class="release-label">SHIPPED · PAYMENT RELIABILITY</div><h3>Arc transaction lifecycle observer</h3><p>Added a bounded, read-only observer for Arc's pending-to-final transaction lifecycle with receipt outcome, observed fee, block context, and a reproducible local report.</p><div class="release-tags"><span>Two-state lifecycle</span><span>Observed fee</span><span>Bounded polling</span><span>Read-only</span></div><div class="claim-boundary"><b>Claim boundary</b><p>The timer measures this browser's observation window against a supplied endpoint. It is not submission-to-finality time, a performance benchmark, or an official Arc network claim.</p></div></div></article>
           <article class="release-item featured"><div class="release-stamp"><b>v1.1</b><span>16 Sep 2026</span></div><div class="release-body"><div class="release-label">SHIPPED · SOURCE CROSS-CHECK</div><h3>Cross-RPC receipt witness</h3><p>Added a paired public-receipt comparison that makes it easy to record where two supplied RPC sources agree—or where a reviewer should investigate further.</p><div class="release-tags"><span>Receipt comparison</span><span>Source-aware</span><span>Read-only</span><span>Evidence pack</span></div><div class="claim-boundary"><b>Claim boundary</b><p>Agreement is only an observation of two supplied endpoints at a point in time. It is not proof of finality, endpoint ownership, network health, or official Arc status.</p></div></div></article>
           <article class="release-item featured"><div class="release-stamp"><b>v1.0</b><span>16 Sep 2026</span></div><div class="release-body"><div class="release-label">SHIPPED · RELEASE DISCIPLINE</div><h3>Local evidence release gate</h3><p>Added a transparent local gate that lists completed and missing readiness evidence before a reviewer promotes a release or makes a launch claim.</p><div class="release-tags"><span>Review gate</span><span>Missing evidence</span><span>Local standard</span><span>Claim boundary</span></div><div class="claim-boundary"><b>Claim boundary</b><p>The gate is a local review aid. It is not a security audit, testnet/mainnet health signal, release authorization, or official Arc approval.</p></div></div></article>
           <article class="release-item featured"><div class="release-stamp"><b>v0.9</b><span>16 Sep 2026</span></div><div class="release-body"><div class="release-label">SHIPPED · EVIDENCE INTEGRITY</div><h3>Local release evidence packs</h3><p>Added a local, review-ready evidence pack that gathers session outputs, screens for common sensitive phrases, and calculates a SHA-256 integrity fingerprint before Markdown or JSON export.</p><div class="release-tags"><span>SHA-256</span><span>Local export</span><span>Privacy review</span><span>Reproducible QA</span></div><div class="claim-boundary"><b>Claim boundary</b><p>The hash shows integrity for the generated local payload only. It does not certify endpoint ownership, test correctness, security, or official Arc endorsement.</p></div></div></article>
@@ -161,7 +435,7 @@
         </div>
       </section>
 
-      <section class="bundle wrap" id="bundle">
+      <section class="bundle wrap tool-surface" data-workflow="release" id="bundle">
         <div class="bundle-copy"><div class="overline">Shareable QA session bundle</div><h2>One reviewable<br />record of the work.</h2><p>Generate a concise Markdown handoff from the checks completed in this browser: readiness tasks, wallet test outcomes, and any RPC or transaction evidence run during this session.</p><div class="bundle-guard"><span>◌</span><p>Local-only. Nothing is uploaded. Include notes only when they are public-safe and relevant to a reviewer.</p></div></div>
         <div class="bundle-card">
           <div class="console-head"><span><i></i> REVIEW BUNDLE</span><small>LOCAL · MARKDOWN</small></div>
@@ -172,11 +446,11 @@
         </div>
       </section>
 
-      <section class="release-pack wrap" id="release-pack">
+      <section class="release-pack wrap tool-surface" data-workflow="release" id="release-pack">
         <div class="release-pack-copy"><div class="overline">Release evidence pack</div><h2>Package the proof.<br />Protect the context.</h2><p>Create a review-ready snapshot from the evidence generated during this browser session. The pack is never uploaded and its integrity fingerprint is calculated locally in your browser.</p><div class="release-pack-guard"><span>◌</span><p>Before an export, the pack checks for common sensitive phrases. It cannot guarantee data is safe—review every report before sharing.</p></div></div>
         <div class="release-pack-card">
           <div class="console-head"><span><i></i> EVIDENCE PACK</span><small>LOCAL · SHA-256</small></div>
-          <div class="pack-scope"><span>INCLUDES</span><p>Readiness checklist · wallet matrix · RPC diagnostics · network configuration · RPC consistency · cross-RPC receipt witness · explorer route · transaction evidence</p></div>
+          <div class="pack-scope"><span>INCLUDES</span><p>Readiness checklist · wallet matrix · RPC diagnostics · network configuration · RPC consistency · cross-RPC receipt witness · explorer route · transaction evidence · payment reliability · payment intent verification · redacted incident reproduction</p></div>
           <label class="pack-option"><input id="pack-notes" type="checkbox" /> <span>Include public-safe wallet-test notes</span></label>
           <button class="pack-generate" id="generate-pack" type="button">Generate release evidence pack <span>→</span></button>
           <div class="pack-alert" id="pack-alert" hidden aria-live="polite"></div>
@@ -184,23 +458,23 @@
         </div>
       </section>
 
-      <section class="gate wrap" id="release-gate">
+      <section class="gate wrap tool-surface" data-workflow="release" id="release-gate">
         <div class="gate-copy"><div class="overline">Mainnet release gate</div><h2>Turn evidence into<br />a review decision.</h2><p>Assess what has been recorded in this browser against a transparent, local release standard. The result surfaces missing work before someone makes a launch claim.</p><div class="gate-guard"><span>◌</span><p>This is a local reviewer aid—not a security audit, official Arc approval, or a statement that mainnet is ready.</p></div></div>
         <div class="gate-card">
           <div class="console-head"><span><i></i> LOCAL RELEASE GATE</span><small>CLIENT-SIDE · REVIEW</small></div>
-          <div class="gate-standard"><span>LOCAL STANDARD</span><p>Five completed readiness tasks, at least one wallet check, and recorded diagnostic, configuration, consistency, cross-RPC receipt witness, and transaction evidence.</p></div>
+          <div class="gate-standard"><span>LOCAL STANDARD</span><p>Five completed readiness tasks, at least one wallet check, and recorded diagnostic, configuration, consistency, cross-RPC receipt witness, transaction evidence, payment reliability observation, payment intent verification, and redacted incident reproduction.</p></div>
           <button class="gate-run" id="assess-gate" type="button">Assess local release gate <span>→</span></button>
           <div class="gate-result" id="gate-result" aria-live="polite"><div class="empty-gate"><span>◈</span><p>No decision has been generated.<br />Run an assessment after recording evidence.</p></div></div>
           <button class="copy-gate" id="copy-gate" type="button" disabled>Copy release-gate report</button>
         </div>
       </section>
 
-      <section class="readiness wrap" id="checklist">
+      <section class="readiness wrap tool-surface" data-workflow="release" id="checklist">
         <div class="readiness-head"><div><div class="overline">Personal launch board</div><h2>Turn preparation into evidence.</h2></div><div class="progress-box"><span id="progress-count">0 / 5</span><small>readiness items complete</small></div></div>
         <div class="readiness-list" id="readiness-list"></div>
       </section>
 
-      <section class="report wrap" id="report">
+      <section class="report wrap tool-surface" data-workflow="quality" id="report">
         <div class="report-copy"><div class="overline">Structured bug report</div><h2>Make failures<br />easy to reproduce.</h2><p>Create a clean Markdown report with the context a maintainer needs: test surface, steps, expected result, actual result, and public evidence.</p><div class="privacy-note"><span>◌</span> Local-only generator. Do not include seed phrases, private keys, passwords, or personal data.</div></div>
         <form id="brief-form" class="brief-form">
           <label>Issue title<input id="issue-title" maxlength="100" placeholder="e.g. Wallet reconnect does not refresh account state" /></label>
@@ -214,7 +488,7 @@
         <div class="brief-result" id="brief-result" hidden><div class="result-top"><span>BUG REPORT · LOCAL DRAFT</span><button id="copy-brief" type="button">Copy Markdown</button></div><pre id="brief-text"></pre></div>
       </section>
 
-      <section class="safety wrap" id="safety">
+      <section class="safety wrap tool-surface" data-workflow="release" id="safety">
         <div><div class="overline">Safety standard</div><h2>Useful mainnet tools<br />should earn trust.</h2></div>
         <div class="safety-rules"><article><span>✓</span><p><b>Label the state clearly.</b> Preview, unavailable, and verified are different states — users should never need to guess.</p></article><article><span>✓</span><p><b>Keep ownership with the user.</b> A wallet must approve its own actions; a site should explain every request before it happens.</p></article><article><span>✓</span><p><b>Link to primary sources.</b> When official Arc endpoints and explorer routes are ready, use them directly and show the destination.</p></article></div>
       </section>

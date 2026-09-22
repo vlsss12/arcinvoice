@@ -1,0 +1,22 @@
+{
+  "name": "Arc Mainnet Desk Reliability Agent",
+  "description": "A safety-first payment-operations assistant that inspects public Arc receipt and RPC evidence, groups exceptions, and prepares review-ready summaries. It does not custody assets, connect wallets, sign transactions, or make payment decisions.",
+  "agent_type": "payment_operations_observer",
+  "capabilities": [
+    "public_receipt_inspection",
+    "rpc_observation",
+    "exception_triage",
+    "evidence_packaging",
+    "human_review_handoff"
+  ],
+  "network": "Arc Testnet",
+  "version": "0.1.0",
+  "safety": {
+    "wallet_access": false,
+    "transaction_signing": false,
+    "transaction_submission": false,
+    "custody": false,
+    "human_review_required": true
+  },
+  "homepage": "https://arc-mainnet-desk.vercel.app/#agentic-brief"
+}
