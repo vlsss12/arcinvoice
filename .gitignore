@@ -1,2 +1,8 @@
 .DS_Store
 .vercel
+**/.env
+**/.env.*
+arc-mainnet-desk/agent-registration/
+arc-mainnet-desk/onchain/broadcast/
+arc-mainnet-desk/onchain/cache/
+arc-mainnet-desk/onchain/out/
