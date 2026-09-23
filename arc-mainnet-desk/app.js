@@ -130,10 +130,67 @@ async function reproduceIncident(){const endpointA=incidentRpcA.value.trim(),end
 runIncident.addEventListener('click',reproduceIncident);copyIncident.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(latestIncidentReport);notify('Redacted incident report copied locally.')}catch{notify('Copy is unavailable in this browser.')}});
 const packNotes=document.querySelector('#pack-notes'),generatePack=document.querySelector('#generate-pack'),packAlert=document.querySelector('#pack-alert'),packResult=document.querySelector('#pack-result'),packHash=document.querySelector('#pack-hash'),packText=document.querySelector('#pack-text'),copyPackMarkdown=document.querySelector('#copy-pack-markdown'),copyPackJson=document.querySelector('#copy-pack-json');let latestPackMarkdown='',latestPackJson='';
 function sensitivePackTerms(value){const matches=String(value).match(/seed phrase|recovery phrase|private key|mnemonic|password|credential/gi)||[];return [...new Set(matches.map(match=>match.toLowerCase()))]}
-function packSources(includeNotes){return{readiness:{completed:readinessData().length,total:readiness.length,items:readiness.map(([title],index)=>({title,complete:readinessData().includes(index)}))},wallet_matrix:{recorded_checks:countWalletChecks(),results:walletBundle(includeNotes)},rpc_diagnostic:latestDiagnostic||null,network_configuration:latestNetworkReport||null,rpc_consistency:latestConsistencyReport||null,cross_rpc_receipt_witness:latestWitnessReport||null,explorer_route:latestResolverReport||null,transaction_evidence:latestEvidence||null,payment_reliability:latestPaymentReport||null,payment_intent_verification:latestIntentReport||null,rpc_incident_reproduction:latestIncidentReport||null}}
-function packMarkdown(payload,hash){const source=payload.sources;return `# Arc Mainnet Desk — Release Evidence Pack\n\nGenerated: ${payload.generated_at}\nScope: ${payload.scope}\n\n## Integrity\n- Algorithm: SHA-256\n- Fingerprint: \`${hash}\`\n- Coverage: the JSON payload below, excluding this integrity section.\n\n## Session summary\n- Readiness: ${source.readiness.completed} / ${source.readiness.total} complete\n- Wallet checks: ${source.wallet_matrix.recorded_checks}\n- RPC diagnostic: ${source.rpc_diagnostic?'Included':'Not run'}\n- Network configuration: ${source.network_configuration?'Included':'Not run'}\n- RPC consistency: ${source.rpc_consistency?'Included':'Not run'}\n- Cross-RPC receipt witness: ${source.cross_rpc_receipt_witness?'Included':'Not run'}\n- Explorer route: ${source.explorer_route?'Included':'Not run'}\n- Transaction evidence: ${source.transaction_evidence?'Included':'Not run'}\n- Payment reliability: ${source.payment_reliability?'Included':'Not run'}\n- RPC incident reproduction: ${source.rpc_incident_reproduction?'Included':'Not run'}\n\n## Readiness checklist\n${source.readiness.items.map(item=>`- [${item.complete?'x':' '}] ${item.title}`).join('\n')}\n\n## Wallet compatibility matrix\n${source.wallet_matrix.results}\n\n## RPC diagnostic\n${source.rpc_diagnostic||'Not run during this browser session.'}\n\n## Network configuration\n${source.network_configuration||'Not run during this browser session.'}\n\n## RPC consistency\n${source.rpc_consistency||'Not run during this browser session.'}\n\n## Cross-RPC receipt witness\n${source.cross_rpc_receipt_witness||'Not run during this browser session.'}\n\n## Explorer route\n${source.explorer_route||'Not generated during this browser session.'}\n\n## Transaction evidence\n${source.transaction_evidence||'Not run during this browser session.'}\n\n## Payment reliability\n${source.payment_reliability||'Not run during this browser session.'}\n\n## Redacted RPC incident reproduction\n${source.rpc_incident_reproduction||'Not run during this browser session.'}\n\n## Review boundaries\n- This pack was generated locally in this browser. Nothing was uploaded by Arc Mainnet Desk.\n- The fingerprint supports comparison of this generated payload; it does not attest to endpoint ownership, data accuracy, or official Arc approval.\n- Review before sharing. Do not include recovery phrases, private keys, passwords, credentials, or personal data.`}
+function packSources(includeNotes){return{readiness:{completed:readinessData().length,total:readiness.length,items:readiness.map(([title],index)=>({title,complete:readinessData().includes(index)}))},wallet_matrix:{recorded_checks:countWalletChecks(),results:walletBundle(includeNotes)},rpc_diagnostic:latestDiagnostic||null,network_configuration:latestNetworkReport||null,rpc_consistency:latestConsistencyReport||null,cross_rpc_receipt_witness:latestWitnessReport||null,explorer_route:latestResolverReport||null,transaction_evidence:latestEvidence||null,payment_reliability:latestPaymentReport||null,payment_intent_verification:latestIntentReport||null,contract_change_watch:latestContractReport||null,rpc_incident_reproduction:latestIncidentReport||null}}
+function packMarkdown(payload,hash){
+  const source=payload.sources;
+  const status=value=>value?'Included':'Not run';
+  const section=(title,value)=>`## ${title}\n${value||'Not run during this browser session.'}`;
+  return `# Arc Mainnet Desk — Release Evidence Pack
+
+Generated: ${payload.generated_at}
+Scope: ${payload.scope}
+
+## Integrity
+- Algorithm: SHA-256
+- Fingerprint: \`${hash}\`
+- Coverage: the serialized JSON payload excluding the integrity object.
+
+## Session summary
+- Readiness: ${source.readiness.completed} / ${source.readiness.total} complete
+- Wallet checks: ${source.wallet_matrix.recorded_checks}
+- RPC diagnostic: ${status(source.rpc_diagnostic)}
+- Network configuration: ${status(source.network_configuration)}
+- RPC consistency: ${status(source.rpc_consistency)}
+- Cross-RPC receipt witness: ${status(source.cross_rpc_receipt_witness)}
+- Explorer route: ${status(source.explorer_route)}
+- Transaction evidence: ${status(source.transaction_evidence)}
+- Payment reliability: ${status(source.payment_reliability)}
+- Payment intent verification: ${status(source.payment_intent_verification)}
+- Contract change watch: ${status(source.contract_change_watch)}
+- RPC incident reproduction: ${status(source.rpc_incident_reproduction)}
+
+## Readiness checklist
+${source.readiness.items.map(item=>`- [${item.complete?'x':' '}] ${item.title}`).join('\n')}
+
+## Wallet compatibility matrix
+${source.wallet_matrix.results}
+
+${[
+  section('RPC diagnostic',source.rpc_diagnostic),
+  section('Network configuration',source.network_configuration),
+  section('RPC consistency',source.rpc_consistency),
+  section('Cross-RPC receipt witness',source.cross_rpc_receipt_witness),
+  section('Explorer route',source.explorer_route),
+  section('Transaction evidence',source.transaction_evidence),
+  section('Payment reliability',source.payment_reliability),
+  section('Payment intent verification',source.payment_intent_verification),
+  section('Contract change watch',source.contract_change_watch),
+  section('Redacted RPC incident reproduction',source.rpc_incident_reproduction)
+].join('\n\n')}
+
+## Review boundaries
+- This pack was generated locally in this browser. Nothing was uploaded by Arc Mainnet Desk.
+- The fingerprint supports comparison of this generated payload; it does not attest to endpoint ownership, data accuracy, or official Arc approval.
+- Review before sharing. Do not include recovery phrases, private keys, passwords, credentials, or personal data.`;
+}
 async function generateReleasePack(){packAlert.hidden=true;packResult.hidden=true;const payload={format:'arc-mainnet-desk.release-evidence-pack/v1',generated_at:new Date().toISOString(),scope:'Local browser session; review before sharing.',sources:packSources(packNotes.checked)};const flagged=sensitivePackTerms(JSON.stringify(payload));if(flagged.length){packAlert.textContent=`Export paused: possible sensitive phrase detected (${flagged.join(', ')}). Remove it from wallet-test notes before creating a pack.`;packAlert.hidden=false;return}if(!window.crypto?.subtle){packAlert.textContent='This browser does not provide the cryptography feature required to calculate a local integrity fingerprint.';packAlert.hidden=false;return}generatePack.disabled=true;generatePack.textContent='Calculating fingerprint…';try{const serialized=JSON.stringify(payload);const digest=await window.crypto.subtle.digest('SHA-256',new TextEncoder().encode(serialized));const hash=Array.from(new Uint8Array(digest),byte=>byte.toString(16).padStart(2,'0')).join('');const exported={...payload,integrity:{algorithm:'SHA-256',fingerprint:hash,coverage:'The serialized payload excluding the integrity object.'}};latestPackJson=JSON.stringify(exported,null,2);latestPackMarkdown=packMarkdown(payload,hash);packHash.textContent=`SHA-256 · ${hash}`;packText.textContent=latestPackMarkdown;packResult.hidden=false;packResult.scrollIntoView({behavior:'smooth',block:'nearest'});notify('Release evidence pack generated locally.')}catch{packAlert.textContent='The local integrity fingerprint could not be calculated. No report was exported.';packAlert.hidden=false}finally{generatePack.disabled=false;generatePack.innerHTML='Generate release evidence pack <span>→</span>'}}
 generatePack.addEventListener('click',generateReleasePack);copyPackMarkdown.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(latestPackMarkdown);notify('Release pack Markdown copied locally.')}catch{notify('Copy is unavailable in this browser.')}});copyPackJson.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(latestPackJson);notify('Release pack JSON copied locally.')}catch{notify('Copy is unavailable in this browser.')}});
+document.querySelector('#open-anchor-verifier')?.addEventListener('click', () => {
+  if (packResult.hidden) return;
+  const hash = packHash.textContent.match(/SHA-256\s*·\s*([0-9a-f]{64})\b/i)?.[1];
+  if (!hash) return;
+  try { sessionStorage.setItem('arc-desk-evidence-digest', `0x${hash.toLowerCase()}`); } catch { /* Manual paste remains available. */ }
+});
 const assessGate=document.querySelector('#assess-gate'),gateResult=document.querySelector('#gate-result'),copyGate=document.querySelector('#copy-gate');let latestGateReport='';
 function gateRequirements(){return[{label:'Readiness checklist',detail:`${readinessData().length} / ${readiness.length} tasks complete`,met:readinessData().length===readiness.length},{label:'Wallet journey evidence',detail:`${countWalletChecks()} recorded check${countWalletChecks()===1?'':'s'}`,met:countWalletChecks()>0},{label:'RPC diagnostic',detail:latestDiagnostic?'Recorded this session':'Not recorded this session',met:Boolean(latestDiagnostic)},{label:'Network configuration',detail:latestNetworkReport?'Recorded this session':'Not recorded this session',met:Boolean(latestNetworkReport)},{label:'RPC consistency',detail:latestConsistencyReport?'Recorded this session':'Not recorded this session',met:Boolean(latestConsistencyReport)},{label:'Cross-RPC receipt witness',detail:latestWitnessReport?'Recorded this session':'Not recorded this session',met:Boolean(latestWitnessReport)},{label:'Transaction evidence',detail:latestEvidence?'Recorded this session':'Not recorded this session',met:Boolean(latestEvidence)},{label:'Payment reliability observation',detail:latestPaymentReport?'Recorded this session':'Not recorded this session',met:Boolean(latestPaymentReport)},{label:'Payment intent verification',detail:latestIntentReport?'Recorded this session':'Not recorded this session',met:Boolean(latestIntentReport)},{label:'Redacted RPC incident reproduction',detail:latestIncidentReport?'Recorded this session':'Not recorded this session',met:Boolean(latestIncidentReport)}]}
 function assessReleaseGate(){const checks=gateRequirements(),completed=checks.filter(check=>check.met).length,status=completed===checks.length?'Evidence complete':completed>=4?'Needs review':'Not ready',statusClass=status.toLowerCase().replaceAll(' ','-'),missing=checks.filter(check=>!check.met).map(check=>check.label);gateResult.innerHTML=`<div class="gate-status"><b>LOCAL REVIEW RESULT</b><span class="gate-badge ${statusClass}">${status}</span></div><div class="gate-checks">${checks.map(check=>`<div class="gate-check ${check.met?'ok':'missing'}"><b>${check.met?'✓ RECORDED':'○ MISSING'}</b>${escapeHtml(check.label)}<br /><span>${escapeHtml(check.detail)}</span></div>`).join('')}</div><p class="gate-note">${status==='Evidence complete'?'All items in this local standard are recorded. Independently review the evidence before any promotion.':`Missing evidence: ${escapeHtml(missing.join(', '))}.`}</p>`;latestGateReport=`# Arc Mainnet Desk — Local Release Gate\n\nAssessed: ${new Date().toISOString()}\nResult: ${status}\nCompleted local standard: ${completed} / ${checks.length}\n\n## Evidence standard\n${checks.map(check=>`- [${check.met?'x':' '}] ${check.label} — ${check.detail}`).join('\n')}\n\n## Missing evidence\n${missing.length?missing.map(item=>`- ${item}`).join('\n'):'- None in this local standard.'}\n\n## Review boundary\n- This is a local reviewer aid based only on evidence recorded in this browser session.\n- It is not a security audit, network-health signal, official Arc approval, or release authorization.\n- Review every underlying report and verify official configuration before making a launch claim.`;copyGate.disabled=false;notify(`Local release gate: ${status}.`)}

@@ -4,6 +4,17 @@ A static, client-side workspace for recording reproducible, public-safe QA evide
 
 > **Independent tooling.** Arc Mainnet Desk is not affiliated with or endorsed by Circle or Arc. It does not represent live network status, official endpoint ownership, wallet compatibility, or transaction finality.
 
+## Public Mainnet demo and current boundary
+
+- Live workspace: https://arc-mainnet-desk.vercel.app/
+- EvidenceAnchor contract: https://explorer.arc.io/address/0xC32a4B49c39856c3ecf6005EE44351e9E727d03d
+- Deployment transaction: https://explorer.arc.io/tx/0x5ba1583d2f367ff5d09df0d5f392b0111c6eafaecd0f836b3baf9b75a4011af0
+- Reproducible public-receipt test: [Mainnet case study](docs/mainnet-receipt-case-study.md)
+
+To review the live read-only flow, open the workspace, use the supplied public Arc transaction in the case study for Payment Intent Verification, generate a Release Evidence Pack, and follow its fingerprint to the [Evidence Anchor verifier](https://arc-mainnet-desk.vercel.app/evidence-anchor.html). The verifier checks the Arc chain ID and deployed runtime before reading the contract at a fixed block. It does not connect a wallet or submit a transaction.
+
+**Current limitation:** The contract is deployed, but no reviewed evidence-pack digest has been anchored. The verifier should therefore report “No anchor found” for newly generated packs. This is not yet a demonstrated end-to-end onchain write/read workflow. Do not present it as one in a funding application.
+
 ## Purpose
 
 Mainnet releases need reviewable evidence rather than optimistic status labels. This workspace keeps the scope deliberately narrow:

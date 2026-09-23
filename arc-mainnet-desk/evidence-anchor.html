@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Read-only verification of Arc Mainnet Desk evidence digests on Arc Mainnet." />
+  <title>Evidence Anchor Verifier · Arc Mainnet Desk</title>
+  <style>
+    :root { color-scheme: dark; font: 16px/1.5 Inter, ui-sans-serif, system-ui, sans-serif; background: #0b0d19; color: #eef0ff; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: radial-gradient(circle at 78% 0%, #26204a 0, transparent 43%), #0b0d19; }
+    main { width: min(100% - 2rem, 780px); margin: 0 auto; padding: 2rem 0 5rem; }
+    a { color: #b8aaff; }
+    .back { display: inline-block; margin-bottom: 3rem; text-decoration: none; }
+    .eyebrow { color: #a7efda; font-size: .75rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+    h1 { font-size: clamp(2rem, 6vw, 3.5rem); line-height: 1.07; letter-spacing: -.04em; margin: .8rem 0 1rem; }
+    .lead { max-width: 62ch; color: #bdc2d8; margin-bottom: 2rem; }
+    .card { border: 1px solid #37394f; border-radius: 22px; background: #171928; padding: clamp(1.25rem, 4vw, 2rem); box-shadow: 0 25px 70px #0004; }
+    .notice { color: #dcc59e; background: #2a241e; border: 1px solid #65513a; border-radius: 12px; padding: .85rem 1rem; margin: 0 0 1.5rem; }
+    label { display: block; font-weight: 650; margin: 1.2rem 0 .4rem; }
+    input { width: 100%; border: 1px solid #535671; background: #0f1120; color: #eef0ff; border-radius: 10px; padding: .85rem 1rem; font: inherit; }
+    input:focus { outline: 2px solid #a895ff; outline-offset: 2px; }
+    .hint { color: #aeb5ce; font-size: .84rem; margin-top: .35rem; }
+    button { margin-top: 1.5rem; border: 0; border-radius: 10px; background: #a895ff; color: #161124; font: inherit; font-weight: 750; padding: .85rem 1.3rem; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: progress; }
+    .anchor-status { margin-top: 1.5rem; border: 1px solid #41455f; border-radius: 12px; padding: 1rem; color: #cfd4e8; }
+    .anchor-status:empty { display: none; }
+    .anchor-status.found { border-color: #3d8d78; background: #142b29; }
+    .anchor-status.missing, .anchor-status.error { border-color: #8d6744; background: #292019; }
+    .anchor-status p { overflow-wrap: anywhere; }
+    .anchor-status small { color: #bdc2d8; }
+    .boundary { color: #aeb5ce; font-size: .85rem; margin-top: 1.5rem; }
+  </style>
+  <script type="module" src="./evidence-anchor.mjs"></script>
+</head>
+<body>
+  <main>
+    <a class="back" href="./index.html#release-pack">← Back to Arc Mainnet Desk</a>
+    <div class="eyebrow">Release evidence · read-only</div>
+    <h1>Verify an evidence fingerprint on Arc.</h1>
+    <p class="lead">Compare a reviewed SHA-256 digest with an EvidenceAnchor contract on Arc Mainnet. This page checks the network and the exact reviewed contract bytecode before reading its registry. It never connects a wallet, signs, or sends a transaction.</p>
+    <section class="card">
+      <p class="notice">EvidenceAnchor is deployed on Arc Mainnet. <a href="https://explorer.arc.io/address/0xC32a4B49c39856c3ecf6005EE44351e9E727d03d" target="_blank" rel="noopener noreferrer">View contract ↗</a> · <a href="https://explorer.arc.io/tx/0x5ba1583d2f367ff5d09df0d5f392b0111c6eafaecd0f836b3baf9b75a4011af0" target="_blank" rel="noopener noreferrer">Deployment transaction ↗</a>. No reviewed evidence-pack digest is linked from this site yet.</p>
+      <form id="anchor-form">
+        <label for="anchor-contract">EvidenceAnchor contract address</label>
+        <input id="anchor-contract" name="contract" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="0x…" required />
+        <p class="hint">Pre-filled with this site's Arc Mainnet deployment. The verifier rejects different runtime bytecode.</p>
+        <label for="evidence-digest">Evidence pack SHA-256 fingerprint</label>
+        <input id="evidence-digest" name="digest" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="0x followed by 64 hexadecimal characters" required />
+        <p class="hint">The release pack displays the hex fingerprint without 0x; add 0x here. Only verify digests of public-safe material.</p>
+        <button id="verify-anchor" type="submit">Verify on Arc Mainnet</button>
+      </form>
+      <div id="anchor-status" class="anchor-status" role="status" aria-live="polite"></div>
+      <p class="boundary">A hash is an integrity reference, not a certification of the underlying report. The result is a point-in-time read from the official Arc Mainnet RPC.</p>
+    </section>
+  </main>
+</body>
+</html>

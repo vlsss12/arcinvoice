@@ -450,11 +450,12 @@
         <div class="release-pack-copy"><div class="overline">Release evidence pack</div><h2>Package the proof.<br />Protect the context.</h2><p>Create a review-ready snapshot from the evidence generated during this browser session. The pack is never uploaded and its integrity fingerprint is calculated locally in your browser.</p><div class="release-pack-guard"><span>◌</span><p>Before an export, the pack checks for common sensitive phrases. It cannot guarantee data is safe—review every report before sharing.</p></div></div>
         <div class="release-pack-card">
           <div class="console-head"><span><i></i> EVIDENCE PACK</span><small>LOCAL · SHA-256</small></div>
-          <div class="pack-scope"><span>INCLUDES</span><p>Readiness checklist · wallet matrix · RPC diagnostics · network configuration · RPC consistency · cross-RPC receipt witness · explorer route · transaction evidence · payment reliability · payment intent verification · redacted incident reproduction</p></div>
+          <div class="pack-scope"><span>INCLUDES</span><p>Readiness checklist · wallet matrix · RPC diagnostics · network configuration · RPC consistency · cross-RPC receipt witness · explorer route · transaction evidence · payment reliability · payment intent verification · contract change watch · redacted incident reproduction</p></div>
           <label class="pack-option"><input id="pack-notes" type="checkbox" /> <span>Include public-safe wallet-test notes</span></label>
           <button class="pack-generate" id="generate-pack" type="button">Generate release evidence pack <span>→</span></button>
           <div class="pack-alert" id="pack-alert" hidden aria-live="polite"></div>
           <div class="pack-result" id="pack-result" hidden><div class="pack-result-head"><span>LOCAL SNAPSHOT · REVIEW BEFORE SHARING</span><b id="pack-hash">SHA-256 · calculating…</b></div><div class="pack-actions"><button id="copy-pack-markdown" type="button">Copy Markdown</button><button id="copy-pack-json" type="button">Copy JSON</button></div><pre id="pack-text"></pre></div>
+          <p class="pack-anchor-link"><a id="open-anchor-verifier" href="./evidence-anchor.html">Check this pack's fingerprint on Arc ↗</a><br /><small>After generating a pack, its fingerprint is passed within this browser tab—not in the URL. No reviewed evidence digest is linked onchain yet.</small></p>
         </div>
       </section>
 
