@@ -67,3 +67,4 @@ Do **not** broadcast because of a points or airdrop theory. Before any deploymen
 ## Security boundaries
 
 This contract is intentionally small but has not been audited. Read the parent [security policy](../SECURITY.md) and [data-boundaries document](../docs/architecture.md) before using it.
+The [limited EvidenceAnchor security review](../docs/evidence-anchor-security-review.md) records specific residual risks and verification limits; it is not an audit.

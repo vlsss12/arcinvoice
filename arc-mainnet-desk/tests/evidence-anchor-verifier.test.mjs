@@ -55,6 +55,9 @@ test('inputs and ABI response are strict', () => {
     anchoredAt: 1_800_000_000,
   });
   assert.throws(() => decodeAnchorResult('0x00'));
+  assert.throws(() => decodeAnchorResult(`0x${word(2)}${submitter.padStart(64, '0')}${word(1)}`), /existence flag/);
+  assert.throws(() => decodeAnchorResult(`0x${word(0)}${submitter.padStart(64, '0')}${word(0)}`), /inconsistent empty-anchor/);
+  assert.throws(() => decodeAnchorResult(`0x${word(1)}${submitter.padStart(64, '0')}${word(1n << 64n)}`), /invalid timestamp/);
 });
 
 test('reads one fixed Arc Mainnet block and never sends a write call', async () => {
@@ -89,4 +92,32 @@ test('rejects wrong chain or unrelated bytecode before eth_call', async () => {
   };
   await assert.rejects(verifyAnchor(contract, digest, wrongCode), /does not match/);
   assert.deepEqual(calls, ['eth_chainId', 'eth_blockNumber', 'eth_getCode']);
+});
+
+test('rejects missing code and malformed block numbers without making an anchor read', async () => {
+  for (const [block, code, expectedError, expectedCalls] of [
+    ['0x1234', '0x', /No contract bytecode/, ['eth_chainId', 'eth_blockNumber', 'eth_getCode']],
+    ['latest', deployedRuntime, /invalid block number/, ['eth_chainId', 'eth_blockNumber']],
+  ]) {
+    const calls = [];
+    const rpc = async method => {
+      calls.push(method);
+      return { eth_chainId: '0x13b2', eth_blockNumber: block, eth_getCode: code }[method];
+    };
+    await assert.rejects(verifyAnchor(contract, digest, rpc), expectedError);
+    assert.deepEqual(calls, expectedCalls);
+  }
+});
+
+test('valid empty anchor result is reported as missing, not as an RPC failure', async () => {
+  const rpc = async method => ({
+    eth_chainId: '0x13b2',
+    eth_blockNumber: '0x1234',
+    eth_getCode: deployedRuntime,
+    eth_call: `0x${word(0)}${word(0)}${word(0)}`,
+  })[method];
+  const result = await verifyAnchor(contract, digest, rpc);
+  assert.equal(result.exists, false);
+  assert.equal(result.anchoredAt, 0);
+  assert.equal(result.submitter, '0x0000000000000000000000000000000000000000');
 });
