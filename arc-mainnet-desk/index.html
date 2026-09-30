@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#080817" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23796bff'/%3E%3Cpath d='M18 46 30 17h7l11 29h-8l-2-7H27l-2 7h-7Zm11-14h7l-3-10-4 10Z' fill='white'/%3E%3C/svg%3E" />
-    <title>Arc Mainnet Desk — Readiness Workspace</title>
+    <title>TraceDesk — Readiness Workspace</title>
     <meta name="description" content="A safety-first mainnet readiness workspace for Arc builders." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -39,7 +39,7 @@
   <body data-workspace-mode="overview">
     <div class="grain"></div>
     <header class="nav wrap">
-      <a class="brand" href="#top" aria-label="Arc Mainnet Desk home"><span class="brand-cube">A</span><span>arc<span>desk</span></span></a>
+      <a class="brand" href="#top" aria-label="TraceDesk home"><span class="brand-cube">T</span><span>Trace<span>Desk</span></span></a>
       <nav><a href="#product-map">Overview</a><a href="#intent-lab">Payments</a><a href="#incident-lab">QA & reliability</a><a href="#release-pack">Release evidence</a></nav>
       <a href="#reconciliation" class="nav-button">Open payment workspace <span>↓</span></a>
     </header>
@@ -49,7 +49,7 @@
         <div class="hero-copy">
           <div class="overline"><i></i> Independent payment-operations workspace</div>
           <h1>USDC payments,<br /><em>operated with evidence.</em></h1>
-          <p>Arc Mainnet Desk helps merchant, support, and operations teams reconcile public USDC receipts, investigate exceptions, and create review-ready evidence.</p>
+          <p>TraceDesk helps merchant, support, and operations teams reconcile public USDC receipts, investigate exceptions, and create review-ready evidence.</p>
           <div class="hero-actions"><a class="primary" href="#reconciliation">Reconcile a payment <span>↓</span></a><a class="quiet-link" href="#intent-lab">Verify a payment intent <span>→</span></a></div>
           <p class="disclaimer"><span>✦</span><b>No custody. No wallet connection. No transaction submission.</b> This workspace reads public data and keeps local operational records in the browser.</p>
         </div>
@@ -63,7 +63,7 @@
       </section>
 
       <section class="product-map wrap" id="product-map" aria-label="Product workflow map">
-        <div class="product-map-head"><div><div class="overline">Arc Mainnet Desk</div><h2>Payment operations,<br />made reviewable.</h2></div><p>Start with the operational job at hand. Every workflow stays client-side, read-only, and explicit about what its result means.</p></div>
+        <div class="product-map-head"><div><div class="overline">TraceDesk</div><h2>Payment operations,<br />made reviewable.</h2></div><p>Start with the operational job at hand. Every workflow stays client-side, read-only, and explicit about what its result means.</p></div>
         <div class="workflow-grid">
           <article class="workflow-card payments" id="payments"><div class="workflow-number">01</div><div class="workflow-icon">◈</div><span>PAYMENTS</span><h3>Verify and reconcile USDC payments.</h3><p>Decode a public receipt, compare a payment intent, then reconcile it against a merchant request.</p><div class="workflow-links"><a href="#intent-lab">Verify payment intent <b>→</b></a><a href="#reconciliation">Open reconciliation desk <b>→</b></a></div></article>
           <article class="workflow-card quality" id="quality"><div class="workflow-number">02</div><div class="workflow-icon">⌘</div><span>QA & RELIABILITY</span><h3>Reproduce the issue. Keep the evidence.</h3><p>Compare RPC responses, inspect public receipts, and produce safer incident reports.</p><div class="workflow-links"><a href="#monitor">Run network diagnostics <b>→</b></a><a href="#agentic-brief">Design a safe agent workflow <b>→</b></a></div></article>
@@ -494,7 +494,7 @@
         <div class="safety-rules"><article><span>✓</span><p><b>Label the state clearly.</b> Preview, unavailable, and verified are different states — users should never need to guess.</p></article><article><span>✓</span><p><b>Keep ownership with the user.</b> A wallet must approve its own actions; a site should explain every request before it happens.</p></article><article><span>✓</span><p><b>Link to primary sources.</b> When official Arc endpoints and explorer routes are ready, use them directly and show the destination.</p></article></div>
       </section>
     </main>
-    <footer class="wrap"><a class="brand" href="#top"><span class="brand-cube">A</span><span>arc<span>desk</span></span></a><p>Independent builder workspace. Not affiliated with or endorsed by Arc.</p><a href="#top">Back to top ↑</a></footer>
+    <footer class="wrap"><a class="brand" href="#top"><span class="brand-cube">T</span><span>Trace<span>Desk</span></span></a><p>Independent builder workspace. Not affiliated with or endorsed by Arc.</p><a href="#top">Back to top ↑</a></footer>
     <dialog class="test-dialog" id="test-dialog" aria-labelledby="test-dialog-title"><button class="dialog-close" id="close-test-dialog" aria-label="Close test record">×</button><div class="dialog-overline">LOCAL TEST RECORD</div><h2 id="test-dialog-title">Record wallet test</h2><p id="dialog-wallet"></p><form id="test-form"><label>Test area<select id="test-area"><option value="connect">Connect</option><option value="network">Network switch</option><option value="disconnect">Disconnect</option><option value="approval">Payment approval</option></select></label><label>Outcome<select id="test-outcome"><option value="passed">Passed</option><option value="testing" selected>Needs testing</option><option value="issue">Known issue</option></select></label><label>Public-safe note <span class="optional">optional</span><textarea id="test-note" rows="3" maxlength="240" placeholder="e.g. account changed correctly after reconnect. Never include wallet addresses or secrets."></textarea></label><button class="primary" type="submit">Save local result <span>→</span></button></form></dialog>
     <div id="toast" class="toast" role="status"></div>
     <script src="app.js"></script>

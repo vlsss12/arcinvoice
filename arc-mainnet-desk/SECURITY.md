@@ -2,7 +2,7 @@
 
 ## Scope
 
-Arc Mainnet Desk is a static, browser-only QA workspace. Its intended security properties are:
+TraceDesk is a static, browser-only QA workspace. Its intended security properties are:
 
 - no private keys, recovery phrases, passwords, or credentials are requested;
 - no wallet is connected and no signature or transaction is initiated;

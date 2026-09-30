@@ -1,10 +1,10 @@
 # Arc Mainnet receipt verification — reproducible public-data case study
 
-Date checked: 2026-09-22. This is a read-only test against a **third-party public transaction**, not a payment made by Arc Mainnet Desk or a customer. No wallet was connected and no transaction was sent.
+Date checked: 2026-09-22. This is a read-only test against a **third-party public transaction**, not a payment made by TraceDesk or a customer. No wallet was connected and no transaction was sent.
 
 ## Inputs
 
-- Live app: `https://arc-mainnet-desk.vercel.app/#intent-lab`
+- Live app: `https://tracedesk-app.vercel.app/#intent-lab`
 - Official Arc Mainnet RPC: `https://rpc.mainnet.arc.io`
 - Public transaction: `0xb147ec455818b74b6511e905abc6f56e15c189432f3c0e98b397108e6916d8e3`
 - Independent explorer page: `https://explorer.arc.io/tx/0xb147ec455818b74b6511e905abc6f56e15c189432f3c0e98b397108e6916d8e3`

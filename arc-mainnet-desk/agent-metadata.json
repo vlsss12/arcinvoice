@@ -1,5 +1,5 @@
 {
-  "name": "Arc Mainnet Desk Reliability Agent",
+  "name": "TraceDesk Reliability Agent",
   "description": "A safety-first payment-operations assistant that inspects public Arc receipt and RPC evidence, groups exceptions, and prepares review-ready summaries. It does not custody assets, connect wallets, sign transactions, or make payment decisions.",
   "agent_type": "payment_operations_observer",
   "capabilities": [
@@ -18,5 +18,5 @@
     "custody": false,
     "human_review_required": true
   },
-  "homepage": "https://arc-mainnet-desk.vercel.app/#agentic-brief"
+  "homepage": "https://tracedesk-app.vercel.app/#agentic-brief"
 }

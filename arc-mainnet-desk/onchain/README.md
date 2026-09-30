@@ -1,6 +1,6 @@
 # Evidence Anchor
 
-A deliberately minimal Solidity contract for making a reviewed Arc Mainnet Desk evidence-pack digest independently verifiable onchain.
+A deliberately minimal Solidity contract for making a reviewed TraceDesk evidence-pack digest independently verifiable onchain.
 
 ## What it does
 
